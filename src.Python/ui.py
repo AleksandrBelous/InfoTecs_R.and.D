@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Модуль пользовательского интерфейса на основе curses
+[RU]
+Модуль пользовательского интерфейса на основе curses.
+
+[EN]
 Module for curses-based user interface
 """
 
@@ -12,7 +15,10 @@ from typing import List
 
 class CursesChatUI:
     """
-    Пользовательский интерфейс чата на основе curses
+    [RU]
+    Пользовательский интерфейс чата на основе curses.
+
+    [EN]
     Curses-based chat user interface
     """
 

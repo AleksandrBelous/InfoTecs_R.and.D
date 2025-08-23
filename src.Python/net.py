@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Модуль для UDP сетевого взаимодействия
+[RU]
+Модуль для UDP сетевого взаимодействия.
+
+[EN]
 Module for UDP network communication
 """
 
@@ -12,8 +15,11 @@ from queue import Queue
 
 class UdpSender:
     """
-    Класс для отправки UDP сообщений на broadcast адрес
-    Class for sending UDP messages to broadcast address
+    [RU]
+    Класс для отправки UDP сообщений на broadcast адрес и порт.
+
+    [EN]
+    Class for sending UDP messages to broadcast address and port.
     """
 
     def __init__(self, ip: str, port: int):

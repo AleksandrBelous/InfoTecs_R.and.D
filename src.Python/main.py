@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Главный модуль UDP чата
-Main UDP chat module
+[RU]
+Главный модуль UDP чата.
+
+[EN]
+Main UDP chat module.
 """
 
 import sys
@@ -20,8 +23,22 @@ def signal_handler(signum, frame):
     [RU]
     Обработчик сигналов для корректного завершения.
     
+    Аргументы:
+        signum (int): Сигнал завершения.
+        frame: Контекст выполнения.
+        
+    Возвращает:
+        None: Функция не возвращает значение.
+        
     [EN]
     Signal handler for graceful shutdown.
+    
+    Args:
+        signum (int): Signal number.
+        frame: Execution context.
+        
+    Returns:
+        None: Function does not return a value.
     """
     print("\nПолучен сигнал завершения. Выход...")
     sys.exit(0)
@@ -64,12 +81,18 @@ def main():
     [RU]
     Главная функция приложения.
     
+    Аргументы:
+        None: Функция не принимает аргументов.
+        
     Возвращает:
         None: Функция не возвращает значение.
         
     [EN]
     Main application function.
     
+    Args:
+        None: Function does not accept arguments.
+        
     Returns:
         None: Function does not return a value.
     """

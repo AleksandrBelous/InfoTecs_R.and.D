@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Модуль для разбора аргументов командной строки
-Module for parsing command line arguments
+[RU]
+Модуль для разбора аргументов командной строки.
+
+[EN]
+Module for parsing command line arguments.
 """
 
 import argparse
