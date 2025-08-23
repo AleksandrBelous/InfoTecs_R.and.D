@@ -13,7 +13,7 @@ class NetworkManager:
     Русский:
         Менеджер сетевых соединений для UDP broadcast чата
         Аргументы:
-            bind_ip: IPv4 адрес интерфейса (для идентификации, прием на 0.0.0.0)
+            bind_ip: IPv4 адрес интерфейса (для приема и отправки сообщений)
             port: порт для приема сообщений
             logger: менеджер логирования
         Возвращаемое значение: None
@@ -21,7 +21,7 @@ class NetworkManager:
     English:
         Network connection manager for UDP broadcast chat
         Arguments:
-            bind_ip: IPv4 interface address (for identification, receives on 0.0.0.0)
+            bind_ip: IPv4 interface address (for receiving and sending messages)
             port: port for receiving messages
             logger: logging manager
         Returns: None
@@ -130,12 +130,10 @@ class NetworkManager:
                     pass
                 self.receive_socket.settimeout(self.receive_timeout)
 
-                # Привязываем сокет к адресу и порту
+                # Привязываем сокет к указанному адресу и порту
                 try:
-                    # Для UDP broadcast технически правильно слушать на 0.0.0.0
-                    actual_bind_ip = '0.0.0.0'  # Прием broadcast от всех интерфейсов
-                    self.receive_socket.bind((actual_bind_ip, self.port))
-                    self.logger.info(f"Socket привязан к {actual_bind_ip}:{self.port} (для приема broadcast)")
+                    self.receive_socket.bind((self.bind_ip, self.port))
+                    self.logger.info(f"Socket привязан к {self.bind_ip}:{self.port}")
                 except OSError as e:
                     if e.errno == 99:  # Cannot assign requested address
                         self.logger.error(
@@ -149,7 +147,7 @@ class NetworkManager:
                                 f"Попробуйте другой порт или используйте 0.0.0.0 для всех интерфейсов."
                                 )
                     else:
-                        self.logger.error(f"Ошибка привязки сокета: {e}")
+                        self.logger.error(f"Ошибка привязки сокета к {self.bind_ip}:{self.port}: {e}")
                     self._cleanup_sockets()
                     return False
 
