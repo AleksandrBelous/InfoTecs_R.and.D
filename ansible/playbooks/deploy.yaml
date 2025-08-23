@@ -17,19 +17,8 @@
 
     - name: Copy IPv4 Chat source files
       ansible.builtin.copy:
-        src: "{{ src_dir }}/{{ item }}"
-        dest: "{{ app_dir }}/{{ item }}"
+        src: "{{ src_dir }}"
+        dest: "{{ app_dir }}"
         owner: vagrant
         group: vagrant
         mode: '0644'
-      loop:
-        - main.py
-        - chat_application.py
-        - network_manager.py
-        - message_handler.py
-        - ui_manager.py
-        - thread_manager.py
-        - config.py
-        - logger_manager.py
-        - requirements.txt
-      failed_when: false
