@@ -57,7 +57,10 @@ class CursesChatUI:
         self.input_win.keypad(True)
 
     def _create_windows(self):
-        """Создает окна для разных панелей"""
+        """
+        Создает окна для разных панелей
+        Creates windows for different panels
+        """
         self.max_y, self.max_x = self.stdscr.getmaxyx()
 
         # Статусная панель (верхняя строка)
@@ -71,14 +74,20 @@ class CursesChatUI:
         self.input_win = curses.newwin(1, self.max_x, self.max_y - 1, 0)
 
     def _draw_status(self):
-        """Отрисовывает статусную панель"""
+        """
+        Отрисовывает статусную панель
+        Draws the status panel
+        """
         self.status_win.clear()
         status_line = f"iface={self.iface_ip}:{self.port} | nick={self.nick or '---'} | status={self.status}"
         self.status_win.addstr(0, 0, status_line[:self.max_x - 1])
         self.status_win.refresh()
 
     def _draw_messages(self):
-        """Отрисовывает панель сообщений"""
+        """
+        Отрисовывает панель сообщений
+        Draws the messages panel
+        """
         self.messages_win.clear()
 
         # Показываем последние сообщения (с учетом размера экрана)
@@ -95,7 +104,10 @@ class CursesChatUI:
         self.messages_win.refresh()
 
     def _draw_input(self):
-        """Отрисовывает панель ввода"""
+        """
+        Отрисовывает панель ввода
+        Draws the input panel
+        """
         self.input_win.clear()
 
         if self.input_mode == "nick":
@@ -116,7 +128,10 @@ class CursesChatUI:
         self.input_win.refresh()
 
     def _process_input(self, key):
-        """Обрабатывает ввод пользователя"""
+        """
+        Обрабатывает ввод пользователя
+        Processes user input
+        """
         if key in (10, 13, curses.KEY_ENTER):  # Enter (разные коды для разных терминалов)
             if self.input_mode == "nick":
                 if self.input_buffer.strip():
@@ -140,7 +155,10 @@ class CursesChatUI:
             self.input_buffer += chr(key)
 
     def _check_messages(self):
-        """Проверяет новые сообщения в очереди"""
+        """
+        Проверяет новые сообщения в очереди
+        Checks for new messages in the queue
+        """
         while not self.rx_queue.empty():
             try:
                 msg = self.rx_queue.get_nowait()

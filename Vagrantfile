@@ -11,23 +11,22 @@ Vagrant.configure("2") do |config|
   # VM definitions
   vms = {
     'debian' => { box: 'debian/bookworm64',    memory: 2048, cpus: 2 },
-    'ubuntu' => { box: 'ubuntu/jammy64',       memory: 2048, cpus: 2 },
-    'centos' => { box: 'centos/stream9',       memory: 2048, cpus: 2 }
+#     'ubuntu' => { box: 'ubuntu/jammy64',       memory: 2048, cpus: 2 },
+#     'centos' => { box: 'centos/stream9',       memory: 2048, cpus: 2 }
   }
   
   # Configure each VM
   vms.each_with_index do |(name, vm_config), index|
     config.vm.define name do |node|
       node.vm.box = vm_config[:box]
-      node.vm.hostname = "#{name}-ipv4chat"
+      node.vm.hostname = name
       
       # Network configuration - use higher port range to avoid conflicts
       node.vm.network "forwarded_port", guest: 22, host: 2300 + index, auto_correct: false, id: "ssh"
       node.vm.network "forwarded_port", guest: 12345, host: 12345 + index, auto_correct: false
       
       # Internal network for inter-VM communication (broadcast support)
-      node.vm.network "private_network", ip: "192.168.56.#{10 + index}", 
-        virtualbox__intnet: "ipv4chat"
+      node.vm.network "private_network", ip: "192.168.56.#{10 + index}", virtualbox__intnet: "ipv4chat"
       
       # VirtualBox settings
       node.vm.provider "virtualbox" do |vb|

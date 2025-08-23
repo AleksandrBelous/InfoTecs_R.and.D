@@ -49,7 +49,10 @@ class UdpSender:
             raise RuntimeError(f"Ошибка отправки: {e}")
 
     def close(self):
-        """Закрывает сокет"""
+        """
+        Закрывает сокет
+        Closes the socket
+        """
         if hasattr(self, 'socket'):
             self.socket.close()
 
