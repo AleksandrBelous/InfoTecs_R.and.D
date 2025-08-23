@@ -52,6 +52,10 @@ class CursesChatUI:
         # Создать окна
         self._create_windows()
 
+        # Включить keypad режим для лучшей обработки клавиш
+        self.stdscr.keypad(True)
+        self.input_win.keypad(True)
+
     def _create_windows(self):
         """Создает окна для разных панелей"""
         self.max_y, self.max_x = self.stdscr.getmaxyx()
@@ -113,7 +117,7 @@ class CursesChatUI:
 
     def _process_input(self, key):
         """Обрабатывает ввод пользователя"""
-        if key == 10:  # Enter
+        if key in (10, 13, curses.KEY_ENTER):  # Enter (разные коды для разных терминалов)
             if self.input_mode == "nick":
                 if self.input_buffer.strip():
                     self.nick = self.input_buffer.strip()
@@ -129,7 +133,7 @@ class CursesChatUI:
                         self.status = "OK"
                     except Exception as e:
                         self.status = str(e)[:20]  # Обрезаем длинные ошибки
-        elif key == 127 or key == 8:  # Backspace
+        elif key in (127, 8, curses.KEY_BACKSPACE):  # Backspace (разные коды для разных терминалов)
             if self.input_buffer:
                 self.input_buffer = self.input_buffer[:-1]
         elif 32 <= key <= 126:  # Печатаемые символы

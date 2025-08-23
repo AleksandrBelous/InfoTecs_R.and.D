@@ -16,17 +16,19 @@ class UdpSender:
     Class for sending UDP messages to broadcast address
     """
 
-    def __init__(self, port: int):
+    def __init__(self, ip: str, port: int):
         """
         Инициализация отправителя
         Initialize sender
         
         Args:
+            ip (str): IP адрес интерфейса для привязки
             port (int): UDP порт для отправки
         """
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        self.socket.bind((ip, 0))  # привязка к исходному интерфейсу со случайным портом
         self.broadcast_addr = ('255.255.255.255', port)
 
     def send(self, text: str) -> None:
@@ -83,7 +85,8 @@ class UdpReceiverThread(threading.Thread):
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self.socket.bind((self.ip, self.port))
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            self.socket.bind(("0.0.0.0", self.port))
             self.socket.settimeout(0.2)
 
             while self.running:

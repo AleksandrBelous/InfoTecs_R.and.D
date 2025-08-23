@@ -58,7 +58,7 @@ def main():
 
         # Создание сетевых компонентов
         rx_thread = UdpReceiverThread(rx_queue, args.ip, args.port)
-        tx_sender = UdpSender(args.port)
+        tx_sender = UdpSender(args.ip, args.port)
 
         # Запуск потока приема
         rx_thread.start()
