@@ -55,7 +55,6 @@ Vagrant.configure("2") do |config|
           ansible.config_file = "ansible/ansible.cfg"
           ansible.limit = "debian"
           ansible.become = true
-          ansible.verbose = "v"
         end
       when 'ubuntu'
         node.vm.provision "ansible" do |ansible|
@@ -64,7 +63,6 @@ Vagrant.configure("2") do |config|
           ansible.config_file = "ansible/ansible.cfg"
           ansible.limit = "ubuntu"
           ansible.become = true
-          ansible.verbose = "v"
         end
       when 'centos'
         node.vm.provision "ansible" do |ansible|
@@ -73,7 +71,6 @@ Vagrant.configure("2") do |config|
           ansible.config_file = "ansible/ansible.cfg"
           ansible.limit = "redhat"
           ansible.become = true
-          ansible.verbose = "v"
         end
       end
       
@@ -85,7 +82,6 @@ Vagrant.configure("2") do |config|
           ansible.config_file = "ansible/ansible.cfg"
           ansible.limit = "all"
           ansible.become = true
-          ansible.verbose = "v"
         end
       end
     end
