@@ -15,11 +15,14 @@
         group: root
         mode: '0644'
 
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
     - name: Restart systemd-resolved if present
       ansible.builtin.service:
         name: systemd-resolved
         state: restarted
-      failed_when: false
+      when: "'systemd-resolved.service' in ansible_facts.services"
 
     - name: Update apt repo and cache
       ansible.builtin.apt:
@@ -36,4 +39,5 @@
           - cmake
           - make
           - build-essential
+          - rsync
         state: present

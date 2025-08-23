@@ -29,4 +29,5 @@
           - cmake
           - make
           - "@Development Tools"
+          - rsync
         state: present
