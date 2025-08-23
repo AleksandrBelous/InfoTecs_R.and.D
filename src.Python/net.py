@@ -18,12 +18,22 @@ class UdpSender:
 
     def __init__(self, ip: str, port: int):
         """
-        Инициализация отправителя
-        Initialize sender
+        [RU]
+        Инициализация отправителя UDP сообщений.
         
+        Аргументы:
+            ip (str): IP адрес интерфейса для привязки.
+            port (int): UDP порт для отправки.
+            
+        Возвращает:
+            None: Конструктор не возвращает значение.
+            
+        [EN]
+        Initialize UDP message sender.
+
         Args:
-            ip (str): IP адрес интерфейса для привязки
-            port (int): UDP порт для отправки
+            ip (str): IP address of interface to bind.
+            port (int): UDP port for sending.
         """
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -33,11 +43,20 @@ class UdpSender:
 
     def send(self, text: str) -> None:
         """
-        Отправляет текстовое сообщение на broadcast адрес
-        Sends text message to broadcast address
+        [RU]
+        Отправляет текстовое сообщение на broadcast адрес.
         
+        Аргументы:
+            text (str): Текст сообщения для отправки.
+            
+        Возвращает:
+            None: Функция не возвращает значение.
+            
+        [EN]
+        Sends text message to broadcast address.
+
         Args:
-            text (str): Текст сообщения для отправки
+            text (str): Text message to send.
         """
         try:
             data = text.encode('utf-8')
@@ -50,8 +69,14 @@ class UdpSender:
 
     def close(self):
         """
-        Закрывает сокет
-        Closes the socket
+        [RU]
+        Закрывает сокет отправителя.
+        
+        Возвращает:
+            None: Функция не возвращает значение.
+            
+        [EN]
+        Closes the sender socket.
         """
         if hasattr(self, 'socket'):
             self.socket.close()
@@ -59,19 +84,33 @@ class UdpSender:
 
 class UdpReceiverThread(threading.Thread):
     """
-    Поток для приема UDP сообщений
-    Thread for receiving UDP messages
+    [RU]
+    Поток для приема UDP сообщений.
+    
+    [EN]
+    Thread for receiving UDP messages.
     """
 
     def __init__(self, queue: Queue, ip: str, port: int):
         """
-        Инициализация потока приемника
-        Initialize receiver thread
+        [RU]
+        Инициализация потока приемника UDP сообщений.
         
+        Аргументы:
+            queue (Queue): Очередь для сообщений.
+            ip (str): IP адрес для привязки.
+            port (int): UDP порт для приема.
+            
+        Возвращает:
+            None: Конструктор не возвращает значение.
+            
+        [EN]
+        Initialize UDP message receiver thread.
+
         Args:
-            queue (Queue): Очередь для сообщений
-            ip (str): IP адрес для привязки
-            port (int): UDP порт для приема
+            queue (Queue): Message queue.
+            ip (str): IP address to bind.
+            port (int): UDP port for receiving.
         """
         super().__init__(daemon=True)
         self.queue = queue
@@ -82,8 +121,14 @@ class UdpReceiverThread(threading.Thread):
 
     def run(self):
         """
-        Основной цикл приема сообщений
-        Main message receiving loop
+        [RU]
+        Основной цикл приема сообщений.
+        
+        Возвращает:
+            None: Функция не возвращает значение.
+            
+        [EN]
+        Main message receiving loop.
         """
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -123,8 +168,14 @@ class UdpReceiverThread(threading.Thread):
 
     def stop(self):
         """
-        Останавливает поток приема
-        Stops receiving thread
+        [RU]
+        Останавливает поток приема сообщений.
+        
+        Возвращает:
+            None: Функция не возвращает значение.
+            
+        [EN]
+        Stops the message receiving thread.
         """
         self.running = False
         if self.socket:

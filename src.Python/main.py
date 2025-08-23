@@ -17,8 +17,11 @@ from ui import CursesChatUI
 
 def signal_handler(signum, frame):
     """
-    Обработчик сигналов для корректного завершения
-    Signal handler for graceful shutdown
+    [RU]
+    Обработчик сигналов для корректного завершения.
+    
+    [EN]
+    Signal handler for graceful shutdown.
     """
     print("\nПолучен сигнал завершения. Выход...")
     sys.exit(0)
@@ -26,15 +29,28 @@ def signal_handler(signum, frame):
 
 def ui_entry(stdscr, sender, rx_queue, ip, port):
     """
-    Точка входа для curses wrapper
-    Entry point for curses wrapper
+    [RU]
+    Точка входа для curses wrapper.
+    
+    Аргументы:
+        stdscr: Объект окна curses.
+        sender: Экземпляр UdpSender.
+        rx_queue (Queue): Очередь сообщений.
+        ip (str): IP адрес интерфейса.
+        port (int): UDP порт.
+        
+    Возвращает:
+        None: Функция не возвращает значение.
+        
+    [EN]
+    Entry point for curses wrapper.
     
     Args:
-        stdscr: Curses window object
-        sender: UdpSender instance
-        rx_queue (Queue): Очередь сообщений
-        ip (str): IP адрес интерфейса
-        port (int): UDP порт
+        stdscr: Curses window object.
+        sender: UdpSender instance.
+        rx_queue (Queue): Message queue.
+        ip (str): Interface IP address.
+        port (int): UDP port.
     """
     ui = CursesChatUI(stdscr, sender, rx_queue, ip, port)
     ui.run()
@@ -42,8 +58,17 @@ def ui_entry(stdscr, sender, rx_queue, ip, port):
 
 def main():
     """
-    Главная функция приложения
-    Main application function
+    [RU]
+    Главная функция приложения.
+    
+    Возвращает:
+        None: Функция не возвращает значение.
+        
+    [EN]
+    Main application function.
+    
+    Returns:
+        None: Function does not return a value.
     """
     # Настройка обработчиков сигналов
     signal.signal(signal.SIGINT, signal_handler)

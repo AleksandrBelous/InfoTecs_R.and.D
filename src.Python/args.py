@@ -14,14 +14,23 @@ from argparse import Namespace
 
 def is_ip_valid(ip: str) -> bool:
     """
-    Проверяет существование IP адреса на текущей машине
-    Validates if IP address exists on current machine
+    [RU]
+    Проверяет существование IP адреса на текущей машине.
+    
+    Аргументы:
+        ip (str): IP адрес для проверки.
+        
+    Возвращает:
+        bool: True если IP адрес существует, False иначе.
+        
+    [EN]
+    Validates if IP address exists on current machine.
     
     Args:
-        ip (str): IP адрес для проверки
+        ip (str): IP address to validate.
         
     Returns:
-        bool: True если IP адрес существует, False иначе
+        bool: True if IP address exists, False otherwise.
     """
     try:
         # Проверяем корректность формата IPv4
@@ -56,11 +65,17 @@ def is_ip_valid(ip: str) -> bool:
 
 def parse_args() -> Namespace:
     """
-    Разбирает аргументы командной строки
-    Parses command line arguments
+    [RU]
+    Разбирает аргументы командной строки.
+    
+    Возвращает:
+        Namespace: Объект с атрибутами ip (str) и port (int).
+        
+    [EN]
+    Parses command line arguments.
     
     Returns:
-        Namespace: Объект с атрибутами ip (str) и port (int)
+        Namespace: Object with attributes ip (str) and port (int).
     """
     parser = argparse.ArgumentParser(
             description="IPv4 UDP broadcast chat",

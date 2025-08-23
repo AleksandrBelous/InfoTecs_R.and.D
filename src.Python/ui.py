@@ -18,15 +18,28 @@ class CursesChatUI:
 
     def __init__(self, stdscr, sender, rx_queue: Queue, iface_ip: str, port: int):
         """
-        Инициализация UI
-        Initialize UI
+        [RU]
+        Инициализация UI.
+        
+        Аргументы:
+            stdscr: Объект окна curses.
+            sender: Экземпляр UdpSender.
+            rx_queue (Queue): Очередь входящих сообщений.
+            iface_ip (str): IP адрес интерфейса.
+            port (int): UDP порт.
+            
+        Возвращает:
+            None: Конструктор не возвращает значение.
+            
+        [EN]
+        Initialize UI.
         
         Args:
-            stdscr: Curses window object
-            sender: UdpSender instance
-            rx_queue (Queue): Очередь входящих сообщений
-            iface_ip (str): IP адрес интерфейса
-            port (int): UDP порт
+            stdscr: Curses window object.
+            sender: UdpSender instance.
+            rx_queue (Queue): Message queue.
+            iface_ip (str): Interface IP address.
+            port (int): UDP port.
         """
         self.stdscr = stdscr
         self.sender = sender
@@ -58,8 +71,14 @@ class CursesChatUI:
 
     def _create_windows(self):
         """
-        Создает окна для разных панелей
-        Creates windows for different panels
+        [RU]
+        Создает окна для разных панелей.
+        
+        Возвращает:
+            None: Функция не возвращает значение.
+            
+        [EN]
+        Creates windows for different panels.
         """
         self.max_y, self.max_x = self.stdscr.getmaxyx()
 
@@ -75,8 +94,14 @@ class CursesChatUI:
 
     def _draw_status(self):
         """
-        Отрисовывает статусную панель
-        Draws the status panel
+        [RU]
+        Отрисовывает статусную панель.
+        
+        Возвращает:
+            None: Функция не возвращает значение.
+            
+        [EN]
+        Draws the status panel.
         """
         self.status_win.clear()
         status_line = f"iface={self.iface_ip}:{self.port} | nick={self.nick or '---'} | status={self.status}"
@@ -85,8 +110,14 @@ class CursesChatUI:
 
     def _draw_messages(self):
         """
-        Отрисовывает панель сообщений
-        Draws the messages panel
+        [RU]
+        Отрисовывает панель сообщений.
+        
+        Возвращает:
+            None: Функция не возвращает значение.
+            
+        [EN]
+        Draws the messages panel.
         """
         self.messages_win.clear()
 
@@ -105,8 +136,14 @@ class CursesChatUI:
 
     def _draw_input(self):
         """
-        Отрисовывает панель ввода
-        Draws the input panel
+        [RU]
+        Отрисовывает панель ввода.
+        
+        Возвращает:
+            None: Функция не возвращает значение.
+            
+        [EN]
+        Draws the input panel.
         """
         self.input_win.clear()
 
@@ -129,8 +166,20 @@ class CursesChatUI:
 
     def _process_input(self, key):
         """
-        Обрабатывает ввод пользователя
-        Processes user input
+        [RU]
+        Обрабатывает ввод пользователя.
+        
+        Аргументы:
+            key (int): Код нажатой клавиши.
+            
+        Возвращает:
+            None: Функция не возвращает значение.
+            
+        [EN]
+        Processes user input.
+        
+        Args:
+            key (int): Key code of pressed key.
         """
         if key in (10, 13, curses.KEY_ENTER):  # Enter (разные коды для разных терминалов)
             if self.input_mode == "nick":
@@ -156,8 +205,14 @@ class CursesChatUI:
 
     def _check_messages(self):
         """
-        Проверяет новые сообщения в очереди
-        Checks for new messages in the queue
+        [RU]
+        Проверяет новые сообщения в очереди.
+        
+        Возвращает:
+            None: Функция не возвращает значение.
+            
+        [EN]
+        Checks for new messages in the queue.
         """
         while not self.rx_queue.empty():
             try:
