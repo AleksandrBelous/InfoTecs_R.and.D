@@ -51,6 +51,9 @@ def ui_entry(stdscr, sender, rx_queue, ip, port):
         rx_queue (Queue): Message queue.
         ip (str): Interface IP address.
         port (int): UDP port.
+    
+    Returns:
+        None: Function does not return a value.
     """
     ui = CursesChatUI(stdscr, sender, rx_queue, ip, port)
     ui.run()

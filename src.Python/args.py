@@ -67,6 +67,9 @@ def parse_args() -> Namespace:
     """
     [RU]
     Разбирает аргументы командной строки.
+
+    Аргументы:
+        None: Функция не принимает аргументов.
     
     Возвращает:
         Namespace: Объект с атрибутами ip (str) и port (int).
@@ -74,6 +77,9 @@ def parse_args() -> Namespace:
     [EN]
     Parses command line arguments.
     
+    Args:
+        None: Function does not accept arguments.
+        
     Returns:
         Namespace: Object with attributes ip (str) and port (int).
     """

@@ -34,6 +34,9 @@ class UdpSender:
         Args:
             ip (str): IP address of interface to bind.
             port (int): UDP port for sending.
+
+        Returns:
+            None: Constructor does not return a value.
         """
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -57,6 +60,9 @@ class UdpSender:
 
         Args:
             text (str): Text message to send.
+
+        Returns:
+            None: Function does not return a value.
         """
         try:
             data = text.encode('utf-8')
@@ -77,6 +83,9 @@ class UdpSender:
             
         [EN]
         Closes the sender socket.
+
+        Returns:
+            None: Function does not return a value.
         """
         if hasattr(self, 'socket'):
             self.socket.close()
@@ -111,6 +120,9 @@ class UdpReceiverThread(threading.Thread):
             queue (Queue): Message queue.
             ip (str): IP address to bind.
             port (int): UDP port for receiving.
+
+        Returns:
+            None: Constructor does not return a value.
         """
         super().__init__(daemon=True)
         self.queue = queue
@@ -123,12 +135,21 @@ class UdpReceiverThread(threading.Thread):
         """
         [RU]
         Основной цикл приема сообщений.
-        
+
+        Аргументы:
+            None: Функция не принимает аргументов.
+            
         Возвращает:
             None: Функция не возвращает значение.
             
         [EN]
         Main message receiving loop.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -170,12 +191,21 @@ class UdpReceiverThread(threading.Thread):
         """
         [RU]
         Останавливает поток приема сообщений.
-        
+
+        Аргументы:
+            None: Функция не принимает аргументов.
+            
         Возвращает:
             None: Функция не возвращает значение.
             
         [EN]
         Stops the message receiving thread.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         self.running = False
         if self.socket:

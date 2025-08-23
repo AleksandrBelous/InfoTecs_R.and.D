@@ -40,6 +40,9 @@ class CursesChatUI:
             rx_queue (Queue): Message queue.
             iface_ip (str): Interface IP address.
             port (int): UDP port.
+
+        Returns:
+            None: Constructor does not return a value.
         """
         self.stdscr = stdscr
         self.sender = sender
@@ -73,12 +76,21 @@ class CursesChatUI:
         """
         [RU]
         Создает окна для разных панелей.
-        
+
+        Аргументы:
+            None: Функция не принимает аргументов.
+            
         Возвращает:
             None: Функция не возвращает значение.
             
         [EN]
         Creates windows for different panels.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         self.max_y, self.max_x = self.stdscr.getmaxyx()
 
@@ -96,12 +108,21 @@ class CursesChatUI:
         """
         [RU]
         Отрисовывает статусную панель.
-        
+
+        Аргументы:
+            None: Функция не принимает аргументов.
+            
         Возвращает:
             None: Функция не возвращает значение.
             
         [EN]
         Draws the status panel.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         self.status_win.clear()
         status_line = f"iface={self.iface_ip}:{self.port} | nick={self.nick or '---'} | status={self.status}"
@@ -112,12 +133,21 @@ class CursesChatUI:
         """
         [RU]
         Отрисовывает панель сообщений.
-        
+
+        Аргументы:
+            None: Функция не принимает аргументов.
+            
         Возвращает:
             None: Функция не возвращает значение.
             
         [EN]
         Draws the messages panel.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         self.messages_win.clear()
 
@@ -139,11 +169,20 @@ class CursesChatUI:
         [RU]
         Отрисовывает панель ввода.
         
+        Аргументы:
+            None: Функция не принимает аргументов.
+            
         Возвращает:
             None: Функция не возвращает значение.
             
         [EN]
         Draws the input panel.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         self.input_win.clear()
 
@@ -180,6 +219,9 @@ class CursesChatUI:
         
         Args:
             key (int): Key code of pressed key.
+
+        Returns:
+            None: Function does not return a value.
         """
         if key in (10, 13, curses.KEY_ENTER):  # Enter (разные коды для разных терминалов)
             if self.input_mode == "nick":
@@ -208,11 +250,20 @@ class CursesChatUI:
         [RU]
         Проверяет новые сообщения в очереди.
         
+        Аргументы:
+            None: Функция не принимает аргументов.
+            
         Возвращает:
             None: Функция не возвращает значение.
             
         [EN]
         Checks for new messages in the queue.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         while not self.rx_queue.empty():
             try:
@@ -226,8 +277,23 @@ class CursesChatUI:
 
     def run(self):
         """
-        Основной цикл UI
-        Main UI loop
+        [RU]
+        Основной цикл UI.
+        
+        Аргументы:
+            None: Функция не принимает аргументов.
+            
+        Возвращает:
+            None: Функция не возвращает значение.
+            
+        [EN]
+        Main UI loop.
+        
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         try:
             while True:
