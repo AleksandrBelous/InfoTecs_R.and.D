@@ -1,0 +1,32 @@
+---
+- name: "CentOS - Minimal Dev Setup"
+  hosts: centos-ipv4chat
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Ensure resolv.conf has valid DNS
+      ansible.builtin.copy:
+        dest: /etc/resolv.conf
+        content: |
+          nameserver 8.8.8.8
+          nameserver 1.1.1.1
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Update package cache
+      ansible.builtin.dnf:
+        update_cache: true
+      retries: 3
+      delay: 5
+
+    - name: Install development tools
+      ansible.builtin.dnf:
+        name:
+          - gcc
+          - g++
+          - cmake
+          - make
+          - "@Development Tools"
+        state: present

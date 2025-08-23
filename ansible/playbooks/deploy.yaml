@@ -1,0 +1,35 @@
+---
+- name: Deploy IPv4 Chat Application
+  hosts: all
+  become: true
+  vars:
+    src_dir: ./../../src.Python
+    app_dir: /home/vagrant/ipv4_chat
+
+  tasks:
+    - name: Create app directory
+      ansible.builtin.file:
+        path: "{{ app_dir }}"
+        state: directory
+        owner: vagrant
+        group: vagrant
+        mode: '0755'
+
+    - name: Copy IPv4 Chat source files
+      ansible.builtin.copy:
+        src: "{{ src_dir }}/{{ item }}"
+        dest: "{{ app_dir }}/{{ item }}"
+        owner: vagrant
+        group: vagrant
+        mode: '0644'
+      loop:
+        - main.py
+        - chat_application.py
+        - network_manager.py
+        - message_handler.py
+        - ui_manager.py
+        - thread_manager.py
+        - config.py
+        - logger_manager.py
+        - requirements.txt
+      failed_when: false
