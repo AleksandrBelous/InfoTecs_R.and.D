@@ -1,6 +1,6 @@
 ---
 - name: "CentOS - Minimal Dev Setup"
-  hosts: centos-ipv4chat
+  hosts: centos
   become: true
   gather_facts: false
 

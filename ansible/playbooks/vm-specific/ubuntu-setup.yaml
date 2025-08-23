@@ -1,6 +1,6 @@
 ---
 - name: "Ubuntu - Minimal Dev Setup"
-  hosts: ubuntu-ipv4chat
+  hosts: ubuntu
   become: true
   gather_facts: false
 

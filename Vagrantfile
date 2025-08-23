@@ -11,8 +11,8 @@ Vagrant.configure("2") do |config|
   # VM definitions
   vms = {
     'debian' => { box: 'debian/bookworm64',    memory: 2048, cpus: 2 },
-#     'ubuntu' => { box: 'ubuntu/jammy64',       memory: 2048, cpus: 2 },
-#     'centos' => { box: 'centos/stream9',       memory: 2048, cpus: 2 }
+    'ubuntu' => { box: 'ubuntu/jammy64',       memory: 2048, cpus: 2 },
+    'centos' => { box: 'centos/stream9',       memory: 2048, cpus: 2 }
   }
   
   # Configure each VM
