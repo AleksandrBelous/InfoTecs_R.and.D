@@ -1,6 +1,6 @@
 ---
 - name: "Debian - Minimal Dev Setup"
-  hosts: debian
+  hosts: debian_hosts
   become: true
   gather_facts: false
 

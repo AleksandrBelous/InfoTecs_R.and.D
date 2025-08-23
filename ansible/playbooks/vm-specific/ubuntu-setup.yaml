@@ -1,6 +1,6 @@
 ---
 - name: "Ubuntu - Minimal Dev Setup"
-  hosts: ubuntu
+  hosts: ubuntu_hosts
   become: true
   gather_facts: false
 

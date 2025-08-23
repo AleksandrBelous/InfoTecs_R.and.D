@@ -1,6 +1,6 @@
 ---
 - name: "CentOS - Minimal Dev Setup"
-  hosts: centos
+  hosts: redhat_hosts
   become: true
   gather_facts: false
 

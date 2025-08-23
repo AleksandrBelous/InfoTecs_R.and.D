@@ -100,6 +100,8 @@ def main():
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
+    rx_thread, tx_sender = None, None
+
     try:
         # Разбор аргументов командной строки
         args = parse_args()

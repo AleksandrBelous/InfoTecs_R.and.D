@@ -15,55 +15,58 @@ import subprocess
 from argparse import Namespace
 
 
-def is_ip_valid(ip: str) -> bool:
+def is_ip_valid(ip: str) -> tuple[bool, str]:
     """
     [RU]
-    Проверяет существование IP адреса на текущей машине.
+    Проверяет IP адрес и возвращает детальное сообщение об ошибке.
     
     Аргументы:
         ip (str): IP адрес для проверки.
         
     Возвращает:
-        bool: True если IP адрес существует, False иначе.
+        tuple[bool, str]: (валидность, сообщение об ошибке).
         
     [EN]
-    Validates if IP address exists on current machine.
+    Validates IP address and returns detailed error message.
     
     Args:
         ip (str): IP address to validate.
         
     Returns:
-        bool: True if IP address exists, False otherwise.
+        tuple[bool, str]: (validity, error message).
     """
+    # Проверка 1: Корректность формата IPv4
     try:
-        # Проверяем корректность формата IPv4
         ipaddress.IPv4Address(ip)
+    except ipaddress.AddressValueError:
+        return False, f"Некорректный формат IP адреса: '{ip}'. Ожидается IPv4 адрес в формате X.X.X.X"
 
-        # Проверяем через ip addr show (работает на всех Linux)
-        try:
-            result = subprocess.run(
-                    ['ip', 'addr', 'show'],
-                    capture_output=True,
-                    text=True,
-                    timeout=3
-                    )
-            if result.returncode == 0 and ip in result.stdout:
-                return True
-        except (subprocess.TimeoutExpired, FileNotFoundError):
+    # Проверка 2: Существование IP адреса на машине через ip addr show
+    try:
+        result = subprocess.run(
+                ['ip', 'addr', 'show'],
+                capture_output=True,
+                text=True,
+                timeout=3
+                )
+        if result.returncode == 0 and ip in result.stdout:
+            # IP найден в интерфейсах, проверяем возможность привязки
             pass
+        else:
+            return False, f"IP адрес '{ip}' не найден на текущей машине."
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        # Fallback: если команда ip недоступна, переходим к проверке сокета
+        pass
 
-        # Fallback: проверяем возможность привязки к указанному IP адресу
-        test_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        try:
-            test_socket.bind((ip, 0))
-            return True
-        except OSError:
-            return False
-        finally:
-            test_socket.close()
-
-    except (ipaddress.AddressValueError, socket.gaierror, OSError):
-        return False
+    # Проверка 3: Возможность привязки к сокету
+    test_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        test_socket.bind((ip, 0))
+        test_socket.close()
+        return True, "IP адрес валиден"
+    except OSError as e:
+        test_socket.close()
+        return False, f"Невозможно привязать сокет к IP адресу '{ip}': {str(e)}"
 
 
 def parse_args() -> Namespace:
@@ -112,9 +115,10 @@ def parse_args() -> Namespace:
 
     args = parser.parse_args()
 
-    # Валидация IP адреса
-    if not is_ip_valid(args.ip):
-        parser.error(f"Ошибка: IP адрес '{args.ip}' не существует на текущей машине или имеет неверный формат")
+    # Валидация IP адреса с детальным сообщением об ошибке
+    is_valid_ip, error_message = is_ip_valid(args.ip)
+    if not is_valid_ip:
+        parser.error(error_message)
 
     return args
 

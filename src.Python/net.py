@@ -44,10 +44,10 @@ class UdpSender:
         Returns:
             None: Constructor does not return a value.
         """
-        self.port = port
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        self.socket.bind((ip, 0))  # привязка к исходному интерфейсу со случайным портом
+        self.port: int = port
+        self.s_socket: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.s_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        self.s_socket.bind((ip, 0))  # привязка к исходному интерфейсу со случайным портом
         self.broadcast_addr = ('255.255.255.255', port)
 
     def send(self, text: str) -> None:
@@ -75,7 +75,7 @@ class UdpSender:
             if len(data) > 1000:
                 raise ValueError(f"Сообщение слишком длинное: {len(data)} байт (максимум 1000)")
 
-            self.socket.sendto(data, self.broadcast_addr)
+            self.s_socket.sendto(data, self.broadcast_addr)
         except Exception as e:
             raise RuntimeError(f"Ошибка отправки: {e}")
 
@@ -94,7 +94,7 @@ class UdpSender:
             None: Function does not return a value.
         """
         if hasattr(self, 'socket'):
-            self.socket.close()
+            self.s_socket.close()
 
 
 class UdpReceiverThread(threading.Thread):
@@ -131,11 +131,11 @@ class UdpReceiverThread(threading.Thread):
             None: Constructor does not return a value.
         """
         super().__init__(daemon=True)
-        self.queue = queue
-        self.ip = ip
-        self.port = port
-        self.running = True
-        self.socket = None
+        self.queue: Queue = queue
+        self.ip: str = ip
+        self.port: int = port
+        self.running: bool = True
+        self.r_socket: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def run(self):
         """
@@ -158,15 +158,14 @@ class UdpReceiverThread(threading.Thread):
             None: Function does not return a value.
         """
         try:
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-            self.socket.bind(("0.0.0.0", self.port))
-            self.socket.settimeout(0.2)
+            self.r_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.r_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            self.r_socket.bind(("0.0.0.0", self.port))
+            self.r_socket.settimeout(0.2)
 
             while self.running:
                 try:
-                    data, addr = self.socket.recvfrom(1024)
+                    data, addr = self.r_socket.recvfrom(1024)
                     src_ip = addr[0]
                     try:
                         text = data.decode('utf-8', 'replace')
@@ -181,17 +180,14 @@ class UdpReceiverThread(threading.Thread):
                     continue
                 except OSError:
                     # Сокет закрыт или другая ошибка
-                    if self.running:
-                        break
-                    else:
-                        break
+                    break
 
         except Exception as e:
             error_msg = f"Ошибка приема: {e}"
             self.queue.put(error_msg)
         finally:
-            if self.socket:
-                self.socket.close()
+            if self.r_socket:
+                self.r_socket.close()
 
     def stop(self):
         """
@@ -214,5 +210,5 @@ class UdpReceiverThread(threading.Thread):
             None: Function does not return a value.
         """
         self.running = False
-        if self.socket:
-            self.socket.close()
+        if self.r_socket:
+            self.r_socket.close()

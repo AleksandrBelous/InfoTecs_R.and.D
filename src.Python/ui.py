@@ -11,6 +11,7 @@ Module for curses-based user interface
 import curses
 from queue import Queue
 from typing import List
+from net import UdpSender
 
 
 class CursesChatUI:
@@ -50,8 +51,8 @@ class CursesChatUI:
         Returns:
             None: Constructor does not return a value.
         """
-        self.stdscr = stdscr
-        self.sender = sender
+        self.stdscr: curses.window = stdscr
+        self.sender: UdpSender = sender
         self.rx_queue: Queue = rx_queue
         self.iface_ip: str = iface_ip
         self.port: int = port
@@ -71,9 +72,9 @@ class CursesChatUI:
         # Атрибуты для работы с экраном
         self.max_y: int = 0
         self.max_x: int = 0
-        self.status_block = None
-        self.messages_block = None
-        self.input_block = None
+        self.status_block: curses._CursesWindow = curses.newwin(0, 0)
+        self.messages_block: curses._CursesWindow = curses.newwin(0, 0)
+        self.input_block: curses._CursesWindow = curses.newwin(0, 0)
 
     def _create_windows(self):
         """
