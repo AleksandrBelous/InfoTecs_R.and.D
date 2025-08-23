@@ -1,99 +1,91 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-IPv4 Chat - UDP Broadcast Chat Application
-IPv4 Чат - Приложение для обмена сообщениями через UDP broadcast
-
-Usage / Использование:
-    python main.py --ip <IPv4_ADDRESS> --port <PORT> [--log]
-
-Examples / Примеры:
-    python main.py --ip 192.168.1.100 --port 12345
-    python main.py --ip 192.168.1.100 --port 12345 --log
+Главный модуль UDP чата
+Main UDP chat module
 """
 
 import sys
-import curses
-from config import ConfigManager
-from logger_manager import LoggerManager
-from chat_application import ChatApplication
+import signal
+from queue import Queue
+from curses import wrapper
+
+from args import parse_args
+from net import UdpSender, UdpReceiverThread
+from ui import CursesChatUI
 
 
-def main(stdscr):
+def signal_handler(signum, frame):
     """
-    Русский:
-        Главная функция приложения с curses UI
-        Аргументы:
-            stdscr: главное окно curses
-        Возвращаемое значение: код выхода
+    Обработчик сигналов для корректного завершения
+    Signal handler for graceful shutdown
+    """
+    print("\nПолучен сигнал завершения. Выход...")
+    sys.exit(0)
+
+
+def ui_entry(stdscr, sender, rx_queue, ip, port):
+    """
+    Точка входа для curses wrapper
+    Entry point for curses wrapper
     
-    English:
-        Main application function with curses UI
-        Arguments:
-            stdscr: main curses window
-        Returns: exit code
+    Args:
+        stdscr: Curses window object
+        sender: UdpSender instance
+        rx_queue (Queue): Очередь сообщений
+        ip (str): IP адрес интерфейса
+        port (int): UDP порт
     """
+    ui = CursesChatUI(stdscr, sender, rx_queue, ip, port)
+    ui.run()
+
+
+def main():
+    """
+    Главная функция приложения
+    Main application function
+    """
+    # Настройка обработчиков сигналов
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
     try:
-        # Загружаем конфигурацию из командной строки
-        config = ConfigManager.from_command_line()
+        # Разбор аргументов командной строки
+        args = parse_args()
 
-        # Создаем менеджер логирования
-        logger = LoggerManager(
-                log_dir="logs",
-                enable_file_logging=config.enable_logging
-                )
+        # Создание очереди для сообщений
+        rx_queue = Queue()
 
-        # Логируем запуск
-        with logger.context("main"):
-            logger.info("Запуск IPv4-чата")
-            logger.info(f"Конфигурация: {config}")
+        # Создание сетевых компонентов
+        rx_thread = UdpReceiverThread(rx_queue, args.ip, args.port)
+        tx_sender = UdpSender(args.port)
 
-            # Создаем и инициализируем приложение
-            app = ChatApplication(config, logger)
+        # Запуск потока приема
+        rx_thread.start()
 
-            if not app.initialize():
-                logger.error("Ошибка инициализации приложения")
-                return 1
+        print(f"Запуск чата на {args.ip}:{args.port}")
+        print("Нажмите Ctrl+C для выхода")
 
-            # Запускаем приложение
-            if not app.start(stdscr=stdscr):
-                logger.error("Ошибка запуска приложения")
-                return 1
-
-            # Основной цикл
-            app.run()
-
-            logger.info("Приложение завершено")
-            return 0
+        # Запуск UI через curses wrapper
+        wrapper(ui_entry, tx_sender, rx_queue, args.ip, args.port)
 
     except KeyboardInterrupt:
-        print("\nПрерывание пользователем")
-        return 130
+        print("\nПолучен сигнал прерывания. Завершение...")
     except Exception as e:
-        print(f"Критическая ошибка: {e}")
-        return 1
+        print(f"Ошибка: {e}")
+        sys.exit(1)
     finally:
-        # Очистка ресурсов
-        if 'logger' in locals():
-            logger.cleanup()
+        # Корректное завершение
+        try:
+            if 'rx_thread' in locals():
+                rx_thread.stop()
+                rx_thread.join(timeout=1)
+            if 'tx_sender' in locals():
+                tx_sender.close()
+        except:
+            pass
+        print("Чат завершен.")
 
 
 if __name__ == "__main__":
-    # Быстрая проверка аргументов перед запуском curses
-    if len(sys.argv) <= 1:
-        print("Использование: python main.py --ip <IP> --port <PORT> [--log]")
-        print("Пример: python main.py --ip 127.0.0.1 --port 12345 --log")
-        sys.exit(2)
-
-    # Валидация аргументов перед curses
-    try:
-        _ = ConfigManager.from_command_line()
-    except SystemExit as e:
-        sys.exit(e.code)
-
-    # Запуск с curses UI
-    try:
-        exit_code = curses.wrapper(main)
-        sys.exit(exit_code)
-    except Exception as e:
-        print(f"Ошибка запуска приложения: {e}")
-        sys.exit(1)
+    main()
