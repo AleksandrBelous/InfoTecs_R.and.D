@@ -11,49 +11,14 @@ Main UDP chat module.
 import sys
 import locale
 from queue import Queue
-from curses import wrapper
-
 from args import parse_args
-from net import UdpSender, UdpReceiverThread
-from ui import CursesChatUI
-
-
-def ui_entry(stdscr, sender, rx_queue, ip, port):
-    """
-    [RU]
-    Точка входа для curses wrapper.
-    
-    Аргументы:
-        stdscr: Объект окна curses.
-        sender: Экземпляр UdpSender.
-        rx_queue (Queue): Очередь сообщений.
-        ip (str): IP адрес интерфейса.
-        port (int): UDP порт.
-        
-    Возвращает:
-        None: Функция не возвращает значение.
-        
-    [EN]
-    Entry point for curses wrapper.
-    
-    Args:
-        stdscr: Curses window object.
-        sender: UdpSender instance.
-        rx_queue (Queue): Message queue.
-        ip (str): Interface IP address.
-        port (int): UDP port.
-    
-    Returns:
-        None: Function does not return a value.
-    """
-    ui = CursesChatUI(stdscr, sender, rx_queue, ip, port)
-    ui.run()
+from net import UdpReceiverThread, UdpSenderThread
 
 
 def main():
     """
     [RU]
-    Главная функция приложения.
+    Главная функция приложения с двумя потоками.
     
     Аргументы:
         None: Функция не принимает аргументов.
@@ -62,7 +27,7 @@ def main():
         None: Функция не возвращает значение.
         
     [EN]
-    Main application function.
+    Main application function with two threads.
     
     Args:
         None: Function does not accept arguments.
@@ -70,30 +35,32 @@ def main():
     Returns:
         None: Function does not return a value.
     """
-    rx_thread, tx_sender = None, None
+    rx_thread, tx_thread = None, None
 
     try:
         # Настройка локализации для поддержки кириллицы
         locale.setlocale(locale.LC_ALL, '')
-        
+
         # Разбор аргументов командной строки
         args = parse_args()
 
         # Создание очереди для сообщений
         rx_queue = Queue()
 
-        # Создание сетевых компонентов
+        # Создание потоков
         rx_thread = UdpReceiverThread(rx_queue, args.ip, args.port)
-        tx_sender = UdpSender(args.ip, args.port)
+        tx_thread = UdpSenderThread(rx_queue, args.ip, args.port)
 
-        # Запуск потока приема
+        # Запуск потоков от главного
         rx_thread.start()
+        tx_thread.start()
 
         print(f"Запуск чата на {args.ip}:{args.port}")
         print("Нажмите Ctrl+C для выхода")
 
-        # Запуск UI через curses wrapper
-        wrapper(ui_entry, tx_sender, rx_queue, args.ip, args.port)
+        # Главный поток ждет завершения
+        rx_thread.join()
+        tx_thread.join()
 
     except KeyboardInterrupt:
         print("\nПолучен сигнал прерывания. Завершение...")
@@ -106,8 +73,9 @@ def main():
             if 'rx_thread' in locals():
                 rx_thread.stop()
                 rx_thread.join(timeout=1)
-            if 'tx_sender' in locals():
-                tx_sender.close_socket()
+            if 'tx_thread' in locals():
+                tx_thread.stop()
+                tx_thread.join(timeout=1)
         except:
             pass
         print("Чат завершен.")

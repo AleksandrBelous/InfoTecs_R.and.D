@@ -21,14 +21,14 @@ class InputHandler(BaseUI):
     User input handler with mode management.
     """
 
-    def __init__(self, stdscr: curses.window, sender, renderer):
+    def __init__(self, stdscr: curses.window, sender_thread, renderer):
         """
         [RU]
         Инициализация обработчика ввода.
 
         Аргументы:
             stdscr (curses.window): Объект окна curses.
-            sender: Экземпляр UdpSender.
+            sender_thread: Экземпляр UdpSenderThread.
             renderer: Рендерер UI.
 
         Возвращает:
@@ -39,14 +39,14 @@ class InputHandler(BaseUI):
 
         Args:
             stdscr (curses.window): Curses window object.
-            sender: UdpSender instance.
+            sender_thread: UdpSenderThread instance.
             renderer: UI renderer.
 
         Returns:
             None: Constructor does not return a value.
         """
         super().__init__(stdscr)
-        self.sender = sender
+        self.sender_thread = sender_thread
         self.renderer = renderer
 
         # Состояние ввода
@@ -240,7 +240,7 @@ class InputHandler(BaseUI):
         if self.input_buffer.strip():
             try:
                 message = self.input_buffer.strip()
-                self.sender.send_datagram(self.nickname, message)
+                self.sender_thread.send_datagram(self.nickname, message)
                 self.input_buffer = ""
                 self.update_status("Message sent")
             except Exception as e:

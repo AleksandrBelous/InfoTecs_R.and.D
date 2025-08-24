@@ -26,14 +26,14 @@ class CursesChatUI:
     Curses-based chat user interface with component composition.
     """
 
-    def __init__(self, stdscr, sender, rx_queue: Queue, iface_ip: str, port: int):
+    def __init__(self, stdscr, sender_thread, rx_queue: Queue, iface_ip: str, port: int):
         """
         [RU]
         Инициализация UI чата.
 
         Аргументы:
             stdscr: Объект окна curses.
-            sender: Экземпляр UdpSender.
+            sender_thread: Экземпляр UdpSenderThread.
             rx_queue (Queue): Очередь входящих сообщений.
             iface_ip (str): IP адрес интерфейса.
             port (int): UDP порт.
@@ -46,7 +46,7 @@ class CursesChatUI:
 
         Args:
             stdscr: Curses window object.
-            sender: UdpSender instance.
+            sender_thread: UdpSenderThread instance.
             rx_queue (Queue): Incoming message queue.
             iface_ip (str): Interface IP address.
             port (int): UDP port.
@@ -55,7 +55,7 @@ class CursesChatUI:
             None: Constructor does not return a value.
         """
         self.stdscr: curses.window = stdscr
-        self.sender = sender
+        self.sender_thread = sender_thread
         self.rx_queue: Queue = rx_queue
         self.iface_ip: str = iface_ip
         self.port: int = port
@@ -63,7 +63,7 @@ class CursesChatUI:
         # Создание компонентов UI
         self.window_manager = WindowManager(stdscr)
         self.renderer = UIRenderer(stdscr, self.window_manager)
-        self.input_handler = InputHandler(stdscr, sender, self.renderer)
+        self.input_handler = InputHandler(stdscr, sender_thread, self.renderer)
         self.message_display = MessageDisplay(stdscr, self.window_manager, self.renderer)
 
         # Состояние UI
