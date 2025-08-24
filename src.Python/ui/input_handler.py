@@ -53,7 +53,7 @@ class InputHandler(BaseUI):
         self.nickname: str = ""
         self.input_buffer: str = ""
         self.input_mode: str = "nickname"  # "nickname" | "message"
-        self.status: str = "???"
+        self.status: str = "Enter nickname"
 
     def get_nickname(self) -> str:
         """

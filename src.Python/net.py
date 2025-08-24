@@ -186,24 +186,27 @@ class UdpReceiverThread(threading.Thread):
 
             while self.running:
                 try:
-                    data, addr = self.r_socket.recvfrom(1024)
+                    data, addr = self.r_socket.recvfrom(2048)
                     src_ip = addr[0]
                     try:
                         text = data.decode('utf-8', 'replace')
 
+                        # Очищаем текст от некорректных символов перед JSON парсингом
+                        cleaned_text = text.encode('utf-8', 'replace').decode('utf-8')
+
                         # Пытаемся парсить как JSON
                         try:
-                            json_data = json.loads(text)
+                            json_data = json.loads(cleaned_text)
                             if isinstance(json_data, dict) and 'nickname' in json_data and 'message' in json_data:
                                 nickname = json_data['nickname']
                                 message = json_data['message']
                                 formatted_message = f"[{src_ip}] {nickname}: {message}"
                             else:
                                 # Некорректная JSON структура - показываем как есть
-                                formatted_message = f"[{src_ip}] {text}"
+                                formatted_message = f"[{src_ip}] {cleaned_text}"
                         except json.JSONDecodeError:
                             # Не JSON - показываем как есть
-                            formatted_message = f"[{src_ip}] {text}"
+                            formatted_message = f"[{src_ip}] {cleaned_text}"
 
                         self.queue.put(formatted_message)
                     except UnicodeDecodeError:
