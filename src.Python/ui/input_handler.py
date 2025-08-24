@@ -297,39 +297,36 @@ class InputHandler(BaseUI):
             self.input_buffer = self.input_buffer[:-1]
             self.renderer.set_input_dirty()
 
-    def _handle_printable_char(self, key: int) -> None:
+    def _handle_printable_char(self, key: str) -> None:
         """
         [RU]
         Обработка печатаемых символов.
 
         Аргументы:
-            key (int): Код клавиши
+            key (str): Unicode символ
 
         Возвращает:
             None: Функция не возвращает значение.
-
-        Аргументы:
-            key (int): Код клавиши
 
         [EN]
         Handle printable characters.
 
         Args:
-            key (int): Key code
+            key (str): Unicode character
 
         Returns:
             None: Function does not return a value.
         """
-        self.input_buffer += chr(key)
+        self.input_buffer += key
         self.renderer.set_input_dirty()
 
-    def handle_input(self, key: int) -> bool:
+    def handle_input(self, key) -> bool:
         """
         [RU]
         Обработка пользовательского ввода.
 
         Аргументы:
-            key (int): Код клавиши
+            key: Unicode символ (str) или код клавиши (int)
 
         Возвращает:
             bool: True если ввод обработан, False иначе
@@ -338,20 +335,23 @@ class InputHandler(BaseUI):
         Handle user input.
 
         Args:
-            key (int): Key code
+            key: Unicode character (str) or key code (int)
 
         Returns:
             bool: True if input was handled, False otherwise
         """
-        if key in (10, 13, curses.KEY_ENTER):
-            self._handle_enter_key()
-            return True
-        elif key in (127, 8, curses.KEY_BACKSPACE):
-            self._handle_backspace_key()
-            return True
-        elif key >= 32:  # Поддержка всех символов начиная с пробела (для кириллицы)
+        if isinstance(key, str):
+            # Unicode символ (кириллица)
             self._handle_printable_char(key)
             return True
+        elif isinstance(key, int):
+            # Специальные клавиши (get_wch возвращает int только для спец.клавиш)
+            if key in (10, 13, curses.KEY_ENTER):
+                self._handle_enter_key()
+                return True
+            elif key in (127, 8, curses.KEY_BACKSPACE):
+                self._handle_backspace_key()
+                return True
         return False
 
     def draw(self) -> None:

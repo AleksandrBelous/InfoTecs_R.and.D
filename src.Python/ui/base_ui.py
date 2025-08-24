@@ -75,6 +75,10 @@ class BaseUI(ABC):
         curses.start_color()
         curses.use_default_colors()
         self.stdscr.keypad(True)
+        
+        # Настройка UTF-8 поддержки
+        curses.set_escdelay(25)
+        curses.set_utf8(True)
 
     def get_terminal_size(self) -> Tuple[int, int]:
         """

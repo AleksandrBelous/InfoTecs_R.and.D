@@ -276,7 +276,7 @@ class CursesChatUI:
 
                 # Обработка ввода
                 try:
-                    key = self.stdscr.getch()
+                    key = self.stdscr.get_wch()
                     if key != -1:
                         self.input_handler.handle_input(key)
                 except KeyboardInterrupt:
