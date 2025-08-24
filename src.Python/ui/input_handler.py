@@ -341,7 +341,11 @@ class InputHandler(BaseUI):
             bool: True if input was handled, False otherwise
         """
         if isinstance(key, str):
-            # Unicode символ (кириллица)
+            # Проверяем на Enter как строку
+            if key in ('\n', '\r'):
+                self._handle_enter_key()
+                return True
+            # Unicode символ (кириллица, ASCII)
             self._handle_printable_char(key)
             return True
         elif isinstance(key, int):

@@ -277,8 +277,11 @@ class CursesChatUI:
                 # Обработка ввода
                 try:
                     key = self.stdscr.get_wch()
-                    if key != -1:
+                    if key != -1 and key is not None:
                         self.input_handler.handle_input(key)
+                except curses.error:
+                    # Нет ввода в неблокирующем режиме
+                    pass
                 except KeyboardInterrupt:
                     break
 
