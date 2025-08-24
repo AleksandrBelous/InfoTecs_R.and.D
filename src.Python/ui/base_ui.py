@@ -31,7 +31,7 @@ class BaseUI(ABC):
             stdscr (curses.window): Объект окна curses.
 
         Возвращает:
-            None
+            None: Конструктор не возвращает значение.
 
         [EN]
         Initialize base UI.
@@ -40,7 +40,7 @@ class BaseUI(ABC):
             stdscr (curses.window): Curses window object.
 
         Returns:
-            None
+            None: Constructor does not return a value.
         """
         self.stdscr: curses.window = stdscr
         self.max_y: int = 0
@@ -54,12 +54,26 @@ class BaseUI(ABC):
         [RU]
         Настройка базовых параметров curses.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Setup basic curses parameters.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         curses.curs_set(1)
         curses.noecho()
         curses.cbreak()
+        curses.start_color()
+        curses.use_default_colors()
         self.stdscr.keypad(True)
 
     def get_terminal_size(self) -> Tuple[int, int]:
@@ -67,11 +81,17 @@ class BaseUI(ABC):
         [RU]
         Получение текущего размера терминала.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
         Возвращает:
             Tuple[int, int]: (высота, ширина) терминала
 
         [EN]
         Get current terminal size.
+
+        Args:
+            None: Function does not accept arguments.
 
         Returns:
             Tuple[int, int]: (height, width) of terminal
@@ -83,11 +103,17 @@ class BaseUI(ABC):
         [RU]
         Обновление размера терминала и проверка изменений.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
         Возвращает:
             bool: True если размер изменился, False иначе
 
         [EN]
         Update terminal size and check for changes.
+
+        Args:
+            None: Function does not accept arguments.
 
         Returns:
             bool: True if size changed, False otherwise
@@ -103,8 +129,20 @@ class BaseUI(ABC):
         [RU]
         Восстановление настроек терминала.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Restore terminal settings.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         curses.curs_set(1)
         curses.nocbreak()
@@ -116,8 +154,20 @@ class BaseUI(ABC):
         [RU]
         Абстрактный метод отрисовки компонента.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Abstract method for component drawing.
+        
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         pass
 

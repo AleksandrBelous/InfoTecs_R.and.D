@@ -39,7 +39,7 @@ class CursesChatUI:
             port (int): UDP порт.
 
         Возвращает:
-            None
+            None: Конструктор не возвращает значение.
 
         [EN]
         Initialize chat UI.
@@ -52,7 +52,7 @@ class CursesChatUI:
             port (int): UDP port.
 
         Returns:
-            None
+            None: Constructor does not return a value.
         """
         self.stdscr: curses.window = stdscr
         self.sender = sender
@@ -67,18 +67,30 @@ class CursesChatUI:
         self.message_display = MessageDisplay(stdscr, self.window_manager, self.renderer)
 
         # Состояние UI
-        self._full_redraw_pending: bool = True
+        self._is_full_redraw_needed: bool = True
 
     def _create_windows(self) -> None:
         """
         [RU]
         Создание/пересоздание окон через менеджер окон.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Create/recreate windows through window manager.
+        
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         self.window_manager.resize_windows()
-        self._full_redraw_pending = True
+        self._is_full_redraw_needed = True
         self.renderer.set_all_dirty()
         self.message_display.set_full_redraw_pending()
 
@@ -87,8 +99,20 @@ class CursesChatUI:
         [RU]
         Единоразовый принудительный показ экрана при старте.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         One-time forced paint on startup.
+        
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         try:
             self.stdscr.clear()
@@ -105,8 +129,20 @@ class CursesChatUI:
         [RU]
         Отрисовка всех компонентов UI.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Draw all UI components.
+        
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         # Отрисовка статуса
         status_text = f"iface={self.iface_ip}:{self.port} | nickname={self.input_handler.get_nickname() or '---'} | status={self.input_handler.get_status()}"
@@ -123,8 +159,20 @@ class CursesChatUI:
         [RU]
         Фокусировка курсора в поле ввода.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Focus cursor in input field.
+        
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         prompt = self.input_handler.get_prompt()
         input_buffer = self.input_handler.get_input_buffer()
@@ -135,29 +183,56 @@ class CursesChatUI:
         [RU]
         Забирает новые сообщения из очереди.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Drain incoming messages from queue.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
-        drained = 0
+        message_count = 0
         while True:
             try:
                 msg = self.rx_queue.get_nowait()
+                self.message_display.add_message(msg)
+                message_count += 1
             except Empty:
                 break
-            else:
-                self.message_display.add_message(msg)
-                drained += 1
+
+        # Обновляем статус если получены сообщения
+        if message_count > 0:
+            self.input_handler.update_status("Received message")
 
     def run(self) -> None:
         """
         [RU]
         Основной цикл UI.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Main UI loop.
+        
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         try:
-            # Явно очистим и «покажем» базовый экран
+            # Явно очистим и покажем базовый экран
             try:
                 self.stdscr.clear()
                 self.stdscr.refresh()
@@ -166,7 +241,7 @@ class CursesChatUI:
 
             # Первичный принудительный показ
             self._initial_paint()
-            self._full_redraw_pending = False
+            self._is_full_redraw_needed = False
 
             # Неблокирующее ожидание клавиш
             self.stdscr.timeout(200)
@@ -178,16 +253,16 @@ class CursesChatUI:
                     # Полная перерисовка и возврат курсора в инпут
                     self._draw_all_components()
                     self._focus_input_caret()
-                    self._full_redraw_pending = False
+                    self._is_full_redraw_needed = False
 
                 # Входящие сообщения
                 self._check_messages()
 
                 # Перерисовки только при необходимости
-                if self._full_redraw_pending:
+                if self._is_full_redraw_needed:
                     self._draw_all_components()
                     self._focus_input_caret()
-                    self._full_redraw_pending = False
+                    self._is_full_redraw_needed = False
                 else:
                     # Отрисовка компонентов с проверкой dirty flags
                     self.message_display.draw()

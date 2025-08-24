@@ -32,7 +32,7 @@ class InputHandler(BaseUI):
             renderer: Рендерер UI.
 
         Возвращает:
-            None
+            None: Конструктор не возвращает значение.
 
         [EN]
         Initialize input handler.
@@ -43,7 +43,7 @@ class InputHandler(BaseUI):
             renderer: UI renderer.
 
         Returns:
-            None
+            None: Constructor does not return a value.
         """
         super().__init__(stdscr)
         self.sender = sender
@@ -53,18 +53,24 @@ class InputHandler(BaseUI):
         self.nickname: str = ""
         self.input_buffer: str = ""
         self.input_mode: str = "nickname"  # "nickname" | "message"
-        self.status: str = "OK"
+        self.status: str = "???"
 
     def get_nickname(self) -> str:
         """
         [RU]
         Получение текущего nickname.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
         Возвращает:
             str: Текущий nickname
 
         [EN]
         Get current nickname.
+
+        Args:
+            None: Function does not accept arguments.
 
         Returns:
             str: Current nickname
@@ -76,11 +82,17 @@ class InputHandler(BaseUI):
         [RU]
         Получение текущего буфера ввода.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
         Возвращает:
             str: Текущий буфер ввода
 
         [EN]
         Get current input buffer.
+
+        Args:
+            None: Function does not accept arguments.
 
         Returns:
             str: Current input buffer
@@ -92,11 +104,17 @@ class InputHandler(BaseUI):
         [RU]
         Получение текущего режима ввода.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
         Возвращает:
             str: Текущий режим ввода
 
         [EN]
         Get current input mode.
+
+        Args:
+            None: Function does not accept arguments.
 
         Returns:
             str: Current input mode
@@ -108,27 +126,62 @@ class InputHandler(BaseUI):
         [RU]
         Получение текущего статуса.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
         Возвращает:
             str: Текущий статус
 
         [EN]
         Get current status.
 
+        Args:
+            None: Function does not accept arguments.
+
         Returns:
             str: Current status
         """
         return self.status
+
+    def update_status(self, new_status: str) -> None:
+        """
+        [RU]
+        Обновление статуса с автоматическим уведомлением рендерера.
+
+        Аргументы:
+            new_status (str): Новый текст статуса
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
+        [EN]
+        Update status with automatic renderer notification.
+
+        Args:
+            new_status (str): New status text
+
+        Returns:
+            None: Function does not return a value.
+        """
+        self.status = new_status
+        self.renderer.set_status_dirty()
 
     def get_prompt(self) -> str:
         """
         [RU]
         Получение приглашения для ввода в зависимости от режима.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
         Возвращает:
             str: Приглашение для ввода
 
         [EN]
         Get input prompt based on current mode.
+
+        Args:
+            None: Function does not accept arguments.
 
         Returns:
             str: Input prompt
@@ -140,18 +193,28 @@ class InputHandler(BaseUI):
         [RU]
         Обработка ввода в режиме nickname.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Handle input in nickname mode.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         if self.input_buffer.strip():
             self.nickname = self.input_buffer.strip()
             self.input_mode = "message"
             self.input_buffer = ""
-            self.status = "OK"
-            self.renderer.set_status_dirty()
+            self.update_status("Enter message")
         else:
-            self.status = "Nickname cannot be empty"
-            self.renderer.set_status_dirty()
+            self.update_status("Nickname cannot be empty")
         self.renderer.set_input_dirty()
 
     def _handle_message_mode(self) -> None:
@@ -159,19 +222,29 @@ class InputHandler(BaseUI):
         [RU]
         Обработка ввода в режиме сообщений.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Handle input in message mode.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         if self.input_buffer.strip():
             try:
                 msg = f"{self.nickname}: {self.input_buffer.strip()}"
                 self.sender.send_datagram(msg)
                 self.input_buffer = ""
-                self.status = "OK"
-                self.renderer.set_status_dirty()
+                self.update_status("Message sent")
             except Exception as e:
-                self.status = str(e)[:80]
-                self.renderer.set_status_dirty()
+                self.update_status(f"Error: {str(e)}")
         self.renderer.set_input_dirty()
 
     def _handle_enter_key(self) -> None:
@@ -179,10 +252,23 @@ class InputHandler(BaseUI):
         [RU]
         Обработка клавиши Enter.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Handle Enter key.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         if self.input_mode == "nickname":
+            self.update_status("Enter nickname")
             self._handle_nickname_mode()
         else:
             self._handle_message_mode()
@@ -192,8 +278,20 @@ class InputHandler(BaseUI):
         [RU]
         Обработка клавиши Backspace.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Handle Backspace key.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         if self.input_buffer:
             self.input_buffer = self.input_buffer[:-1]
@@ -207,11 +305,20 @@ class InputHandler(BaseUI):
         Аргументы:
             key (int): Код клавиши
 
+        Возвращает:
+            None: Функция не возвращает значение.
+
+        Аргументы:
+            key (int): Код клавиши
+
         [EN]
         Handle printable characters.
 
         Args:
             key (int): Key code
+
+        Returns:
+            None: Function does not return a value.
         """
         self.input_buffer += chr(key)
         self.renderer.set_input_dirty()
@@ -242,7 +349,7 @@ class InputHandler(BaseUI):
         elif key in (127, 8, curses.KEY_BACKSPACE):
             self._handle_backspace_key()
             return True
-        elif 32 <= key <= 126:
+        elif key >= 32:  # Поддержка всех символов начиная с пробела (для кириллицы)
             self._handle_printable_char(key)
             return True
         return False
@@ -252,8 +359,20 @@ class InputHandler(BaseUI):
         [RU]
         Отрисовка компонента ввода.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Draw input component.
+        
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         prompt = self.get_prompt()
         self.renderer.draw_input(prompt, self.input_buffer)

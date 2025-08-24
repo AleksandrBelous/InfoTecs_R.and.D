@@ -34,10 +34,10 @@
     - name: Install development tools
       ansible.builtin.apt:
         name:
-          - gcc
-          - g++
-          - cmake
-          - make
-          - build-essential
+#          - gcc
+#          - g++
+#          - cmake
+#          - make
+#          - build-essential
           - rsync
         state: present

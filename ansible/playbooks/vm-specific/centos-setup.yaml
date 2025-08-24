@@ -24,10 +24,10 @@
     - name: Install development tools
       ansible.builtin.dnf:
         name:
-          - gcc
-          - g++
-          - cmake
-          - make
-          - "@Development Tools"
+#          - gcc
+#          - g++
+#          - cmake
+#          - make
+#          - "@Development Tools"
           - rsync
         state: present

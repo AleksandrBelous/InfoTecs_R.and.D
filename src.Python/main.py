@@ -9,6 +9,7 @@ Main UDP chat module.
 """
 
 import sys
+import locale
 from queue import Queue
 from curses import wrapper
 
@@ -72,6 +73,9 @@ def main():
     rx_thread, tx_sender = None, None
 
     try:
+        # Настройка локализации для поддержки кириллицы
+        locale.setlocale(locale.LC_ALL, '')
+        
         # Разбор аргументов командной строки
         args = parse_args()
 

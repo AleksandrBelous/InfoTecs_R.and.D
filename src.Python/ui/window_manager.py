@@ -30,7 +30,7 @@ class WindowManager(BaseUI):
             stdscr (curses.window): Объект окна curses.
 
         Возвращает:
-            None
+            None: Конструктор не возвращает значение.
 
         [EN]
         Initialize window manager.
@@ -39,7 +39,7 @@ class WindowManager(BaseUI):
             stdscr (curses.window): Curses window object.
 
         Returns:
-            None
+            None: Constructor does not return a value.
         """
         super().__init__(stdscr)
 
@@ -57,8 +57,20 @@ class WindowManager(BaseUI):
         [RU]
         Создание/пересоздание окон интерфейса.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Create/recreate interface windows.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         # Статусная строка (верхняя)
         self.status_block = curses.newwin(1, self.max_x, 0, 0)
@@ -78,8 +90,20 @@ class WindowManager(BaseUI):
         [RU]
         Пересоздание окон при изменении размера терминала.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Recreate windows when terminal size changes.
+        
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         self._create_windows()
 
@@ -88,11 +112,20 @@ class WindowManager(BaseUI):
         [RU]
         Получение окна статуса.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
         Возвращает:
             curses.window: Окно статуса
 
         [EN]
         Get status window.
+
+        Returns:
+            curses.window: Status window
+
+        Args:
+            None: Function does not accept arguments.
 
         Returns:
             curses.window: Status window
@@ -104,11 +137,17 @@ class WindowManager(BaseUI):
         [RU]
         Получение окна сообщений.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
         Возвращает:
             curses._CursesWindow: Окно сообщений
 
         [EN]
         Get messages window.
+
+        Args:
+            None: Function does not accept arguments.
 
         Returns:
             curses._CursesWindow: Messages window
@@ -120,11 +159,17 @@ class WindowManager(BaseUI):
         [RU]
         Получение окна ввода.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
         Возвращает:
             curses._CursesWindow: Окно ввода
 
         [EN]
         Get input window.
+
+        Args:
+            None: Function does not accept arguments.
 
         Returns:
             curses._CursesWindow: Input window
@@ -136,11 +181,17 @@ class WindowManager(BaseUI):
         [RU]
         Получение доступной высоты для сообщений.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
         Возвращает:
             int: Доступная высота
 
         [EN]
         Get available height for messages.
+
+        Args:
+            None: Function does not accept arguments.
 
         Returns:
             int: Available height
@@ -152,11 +203,17 @@ class WindowManager(BaseUI):
         [RU]
         Получение доступной ширины.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
         Возвращает:
             int: Доступная ширина
 
         [EN]
         Get available width.
+
+        Args:
+            None: Function does not accept arguments.
 
         Returns:
             int: Available width
@@ -168,29 +225,41 @@ class WindowManager(BaseUI):
         [RU]
         Отрисовка окон (пустая реализация для совместимости).
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
-        Draw windows (empty implementation for compatibility).
+        Draw windows.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         pass
 
     def handle_input(self, key: int) -> bool:
         """
         [RU]
-        Обработка ввода (пустая реализация для совместимости).
+        Обработка ввода.
 
         Аргументы:
             key (int): Код клавиши
 
         Возвращает:
-            bool: False (не обрабатывает ввод)
+            bool: False
 
         [EN]
-        Handle input (empty implementation for compatibility).
+        Handle input.
 
         Args:
             key (int): Key code
 
         Returns:
-            bool: False (does not handle input)
+            bool: False
         """
         return False

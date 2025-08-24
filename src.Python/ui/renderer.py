@@ -15,10 +15,10 @@ from .base_ui import BaseUI
 class UIRenderer(BaseUI):
     """
     [RU]
-    Рендерер для отрисовки UI компонентов (статус, ввод).
+    Рендерер для отрисовки UI блоков (статус, ввод).
 
     [EN]
-    Renderer for UI component drawing (status, input).
+    Renderer for UI blocks drawing (status, input).
     """
 
     def __init__(self, stdscr: curses.window, window_manager):
@@ -31,7 +31,7 @@ class UIRenderer(BaseUI):
             window_manager: Менеджер окон.
 
         Возвращает:
-            None
+            None: Конструктор не возвращает значение.
 
         [EN]
         Initialize renderer.
@@ -41,7 +41,7 @@ class UIRenderer(BaseUI):
             window_manager: Window manager.
 
         Returns:
-            None
+            None: Constructor does not return a value.
         """
         super().__init__(stdscr)
         self.window_manager = window_manager
@@ -53,30 +53,66 @@ class UIRenderer(BaseUI):
     def set_status_dirty(self) -> None:
         """
         [RU]
-        Установка флага необходимости перерисовки статуса.
+        Установка флага необходимости перерисовки блокастатуса.
+
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
 
         [EN]
-        Set flag for status redraw requirement.
+        Set flag for status block redraw requirement.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         self._dirty_status = True
 
     def set_input_dirty(self) -> None:
         """
         [RU]
-        Установка флага необходимости перерисовки ввода.
+        Установка флага необходимости перерисовки блока ввода.
+
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
 
         [EN]
-        Set flag for input redraw requirement.
+        Set flag for input block redraw requirement.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         self._dirty_input = True
 
     def set_all_dirty(self) -> None:
         """
         [RU]
-        Установка флагов необходимости перерисовки всех компонентов.
+        Установка флагов необходимости перерисовки всех блоков.
+
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
 
         [EN]
-        Set flags for all components redraw requirement.
+        Set flags for all blocks redraw requirement.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         self._dirty_status = True
         self._dirty_input = True
@@ -84,16 +120,22 @@ class UIRenderer(BaseUI):
     def draw_status(self, status_text: str) -> None:
         """
         [RU]
-        Отрисовка статусной строки.
+        Отрисовка блока статуса.
 
         Аргументы:
             status_text (str): Текст статуса
+        
+        Возвращает:
+            None: Функция не возвращает значение.
 
         [EN]
-        Draw status line.
+        Draw status block.
 
         Args:
             status_text (str): Status text
+
+        Returns:
+            None: Function does not return a value.
         """
         if not self._dirty_status:
             return
@@ -112,18 +154,24 @@ class UIRenderer(BaseUI):
     def draw_input(self, prompt: str, input_buffer: str) -> None:
         """
         [RU]
-        Отрисовка поля ввода.
+        Отрисовка блока ввода.
 
         Аргументы:
             prompt (str): Приглашение для ввода
             input_buffer (str): Текущий буфер ввода
+        
+        Возвращает:
+            None: Функция не возвращает значение.
 
         [EN]
-        Draw input field.
+        Draw input block.
 
         Args:
             prompt (str): Input prompt
             input_buffer (str): Current input buffer
+
+        Returns:
+            None: Function does not return a value.
         """
         if not self._dirty_input:
             return
@@ -147,18 +195,24 @@ class UIRenderer(BaseUI):
     def focus_input_caret(self, prompt: str, input_buffer: str) -> None:
         """
         [RU]
-        Установка курсора в поле ввода без перерисовки.
+        Установка курсора в блок ввода без перерисовки.
 
         Аргументы:
             prompt (str): Приглашение для ввода
             input_buffer (str): Текущий буфер ввода
 
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
-        Set cursor in input field without redrawing.
+        Set cursor in input block without redrawing.
 
         Args:
             prompt (str): Input prompt
             input_buffer (str): Current input buffer
+
+        Returns:
+            None: Function does not return a value.
         """
         input_window = self.window_manager.get_input_window()
         max_width = self.window_manager.get_available_width()
@@ -172,31 +226,43 @@ class UIRenderer(BaseUI):
     def draw(self) -> None:
         """
         [RU]
-        Отрисовка всех компонентов (пустая реализация).
+        Отрисовка всех блоков UI.
+
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
 
         [EN]
-        Draw all components (empty implementation).
+        Draw all UI blocks.
+
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         pass
 
     def handle_input(self, key: int) -> bool:
         """
         [RU]
-        Обработка ввода (пустая реализация для совместимости).
+        Обработка ввода UI.
 
         Аргументы:
             key (int): Код клавиши
 
         Возвращает:
-            bool: False (не обрабатывает ввод)
+            bool: False
 
         [EN]
-        Handle input (empty implementation for compatibility).
+        Handle input UI.
 
         Args:
             key (int): Key code
 
         Returns:
-            bool: False (does not handle input)
+            bool: False
         """
         return False

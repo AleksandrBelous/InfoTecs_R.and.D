@@ -9,6 +9,7 @@ Message display in UI.
 """
 
 import curses
+import textwrap
 from typing import List
 from .base_ui import BaseUI
 
@@ -16,10 +17,10 @@ from .base_ui import BaseUI
 class MessageDisplay(BaseUI):
     """
     [RU]
-    Компонент отображения сообщений с управлением историей и переносом строк.
+    Компонент отображения сообщений.
 
     [EN]
-    Message display component with history management and word wrapping.
+    Message display component.
     """
 
     def __init__(self, stdscr: curses.window, window_manager, renderer):
@@ -33,7 +34,7 @@ class MessageDisplay(BaseUI):
             renderer: Рендерер UI.
 
         Возвращает:
-            None
+            None: Конструктор не возвращает значение.
 
         [EN]
         Initialize message display component.
@@ -44,7 +45,7 @@ class MessageDisplay(BaseUI):
             renderer: UI renderer.
 
         Returns:
-            None
+            None: Constructor does not return a value.
         """
         super().__init__(stdscr)
         self.window_manager = window_manager
@@ -69,6 +70,9 @@ class MessageDisplay(BaseUI):
 
         Args:
             message (str): New message
+
+        Returns:
+            None: Function does not return a value.
         """
         self.messages.append(message)
 
@@ -83,11 +87,17 @@ class MessageDisplay(BaseUI):
         [RU]
         Получение списка сообщений.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
         Возвращает:
             List[str]: Список сообщений
 
         [EN]
         Get messages list.
+
+        Args:
+            None: Function does not accept arguments.
 
         Returns:
             List[str]: Messages list
@@ -99,8 +109,20 @@ class MessageDisplay(BaseUI):
         [RU]
         Очистка истории сообщений.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Clear message history.
+        
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         self.messages.clear()
         self._last_messages_len = 0
@@ -112,8 +134,20 @@ class MessageDisplay(BaseUI):
         [RU]
         Установка флага необходимости перерисовки.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Set dirty flag for redraw requirement.
+        
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         self._dirty_messages = True
 
@@ -122,8 +156,20 @@ class MessageDisplay(BaseUI):
         [RU]
         Установка флага необходимости полной перерисовки.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Set full redraw pending flag.
+        
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         self._full_redraw_pending = True
 
@@ -152,31 +198,32 @@ class MessageDisplay(BaseUI):
         if max_width <= 1 or len(msg) <= max_width:
             return [msg]
 
-        lines: List[str] = []
-        words = msg.split()
-        cur = ""
-
-        for w in words:
-            test = (cur + " " + w) if cur else w
-            if len(test) <= max_width:
-                cur = test
-            else:
-                if cur:
-                    lines.append(cur)
-                cur = w
-
-        if cur:
-            lines.append(cur)
-
-        return lines
+        return textwrap.wrap(
+                msg,
+                width=max_width,
+                break_long_words=True,
+                break_on_hyphens=False
+                )
 
     def _draw_messages_full(self) -> None:
         """
         [RU]
         Полная отрисовка блока сообщений.
 
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
+
         [EN]
         Full redraw of messages block.
+        
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         messages_window = self.window_manager.get_messages_window()
         max_lines = self.window_manager.get_available_messages_height()
@@ -210,10 +257,22 @@ class MessageDisplay(BaseUI):
     def _append_new_messages(self) -> None:
         """
         [RU]
-        Добавление только новых сообщений "кирпичиками".
+        Добавление только новых сообщений.
+
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
 
         [EN]
-        Append only new messages "brick-by-brick".
+        Append only new messages.
+        
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         if self._last_messages_len > len(self.messages):
             # История была усечена — нужен полный redraw
@@ -231,7 +290,7 @@ class MessageDisplay(BaseUI):
             for msg in self.messages[self._last_messages_len:]:
                 for line in self._wrap_message(msg, max_width=max_width):
                     try:
-                        # Добавляем строку и перенос — окно само прокрутится
+                        # Добавляем строку и перенос
                         messages_window.addstr(line[:max_width] + "\n")
                     except curses.error:
                         pass
@@ -246,10 +305,22 @@ class MessageDisplay(BaseUI):
     def draw(self) -> None:
         """
         [RU]
-        Отрисовка компонента сообщений.
+        Отрисовка блока сообщений.
+
+        Аргументы:
+            None: Функция не принимает аргументов.
+
+        Возвращает:
+            None: Функция не возвращает значение.
 
         [EN]
-        Draw messages component.
+        Draw messages block.
+        
+        Args:
+            None: Function does not accept arguments.
+
+        Returns:
+            None: Function does not return a value.
         """
         if self._full_redraw_pending:
             self._draw_messages_full()
@@ -260,21 +331,21 @@ class MessageDisplay(BaseUI):
     def handle_input(self, key: int) -> bool:
         """
         [RU]
-        Обработка ввода (пустая реализация для совместимости).
+        Обработка ввода.
 
         Аргументы:
             key (int): Код клавиши
 
         Возвращает:
-            bool: False (не обрабатывает ввод)
+            bool: False
 
         [EN]
-        Handle input (empty implementation for compatibility).
+        Handle input.
 
         Args:
             key (int): Key code
 
         Returns:
-            bool: False (does not handle input)
+            bool: False
         """
         return False
