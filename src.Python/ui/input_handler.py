@@ -239,8 +239,8 @@ class InputHandler(BaseUI):
         """
         if self.input_buffer.strip():
             try:
-                msg = f"{self.nickname}: {self.input_buffer.strip()}"
-                self.sender.send_datagram(msg)
+                message = self.input_buffer.strip()
+                self.sender.send_datagram(self.nickname, message)
                 self.input_buffer = ""
                 self.update_status("Message sent")
             except Exception as e:

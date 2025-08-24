@@ -8,6 +8,7 @@
 Module for UDP network communication
 """
 
+import json
 import socket
 import threading
 from queue import Queue
@@ -50,31 +51,42 @@ class UdpSender:
         self.s_socket.bind((ip, 0))  # привязка к исходному интерфейсу со случайным портом
         self.broadcast_addr = ('255.255.255.255', port)
 
-    def send_datagram(self, text: str) -> None:
+    def send_datagram(self, nickname: str, message: str) -> None:
         """
         [RU]
-        Отправляет текстовое сообщение на broadcast адрес.
+        Отправляет сообщение с nickname в JSON формате на broadcast адрес и порт.
         
         Аргументы:
-            text (str): Текст сообщения для отправки.
+            nickname (str): Имя пользователя.
+            message (str): Текст сообщения для отправки.
             
         Возвращает:
             None: Функция не возвращает значение.
             
         [EN]
-        Sends text message to broadcast address.
+        Sends message with nickname in JSON format to broadcast address and port.
 
         Args:
-            text (str): Text message to send.
+            nickname (str): User nickname.
+            message (str): Text message to send.
 
         Returns:
             None: Function does not return a value.
         """
         try:
-            data = text.encode('utf-8')
-            if len(data) > 1000:
-                raise ValueError(f"Сообщение слишком длинное: {len(data)} байт (максимум 1000)")
+            # Проверяем message на объем не более 1000 байт
+            message_bytes = message.encode('utf-8')
+            if len(message_bytes) > 1000:
+                raise ValueError(f"Сообщение слишком длинное: {len(message_bytes)} байт (максимум 1000)")
 
+            # Формируем JSON структуру
+            json_data = {
+                    "nickname": nickname,
+                    "message" : message
+                    }
+
+            # Сериализуем в JSON и отправляем
+            data = json.dumps(json_data, ensure_ascii=False).encode('utf-8')
             self.s_socket.sendto(data, self.broadcast_addr)
         except Exception as e:
             raise RuntimeError(f"Ошибка отправки: {e}")
@@ -178,8 +190,22 @@ class UdpReceiverThread(threading.Thread):
                     src_ip = addr[0]
                     try:
                         text = data.decode('utf-8', 'replace')
-                        message = f"[{src_ip}] {text}"
-                        self.queue.put(message)
+
+                        # Пытаемся парсить как JSON
+                        try:
+                            json_data = json.loads(text)
+                            if isinstance(json_data, dict) and 'nickname' in json_data and 'message' in json_data:
+                                nickname = json_data['nickname']
+                                message = json_data['message']
+                                formatted_message = f"[{src_ip}] {nickname}: {message}"
+                            else:
+                                # Некорректная JSON структура - показываем как есть
+                                formatted_message = f"[{src_ip}] {text}"
+                        except json.JSONDecodeError:
+                            # Не JSON - показываем как есть
+                            formatted_message = f"[{src_ip}] {text}"
+
+                        self.queue.put(formatted_message)
                     except UnicodeDecodeError:
                         # Пропускаем некорректные сообщения
                         continue

@@ -145,7 +145,7 @@ class CursesChatUI:
             None: Function does not return a value.
         """
         # Отрисовка статуса
-        status_text = f"iface={self.iface_ip}:{self.port} | nickname={self.input_handler.get_nickname() or '---'} | status={self.input_handler.get_status()}"
+        status_text = f"iface={self.iface_ip}:{self.port} | nickname: {self.input_handler.get_nickname() or '---'} | status: {self.input_handler.get_status()}"
         self.renderer.draw_status(status_text)
 
         # Отрисовка сообщений
@@ -266,9 +266,8 @@ class CursesChatUI:
                 else:
                     # Отрисовка компонентов с проверкой dirty flags
                     self.message_display.draw()
-                    self.renderer.draw_status(
-                            f"iface={self.iface_ip}:{self.port} | nickname={self.input_handler.get_nickname() or '---'} | status={self.input_handler.get_status()}"
-                            )
+                    status_text = f"iface={self.iface_ip}:{self.port} | nickname: {self.input_handler.get_nickname() or '---'} | status: {self.input_handler.get_status()}"
+                    self.renderer.draw_status(status_text)
                     self.input_handler.draw()
 
                     # Фокусировка курсора после отрисовки
