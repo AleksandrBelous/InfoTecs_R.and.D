@@ -145,9 +145,13 @@ class BaseUI(ABC):
         Returns:
             None: Function does not return a value.
         """
-        curses.curs_set(1)
-        curses.nocbreak()
-        curses.echo()
+        try:
+            curses.curs_set(1)
+            curses.nocbreak()
+            curses.echo()
+            curses.endwin()  # Полное восстановление терминала
+        except:
+            pass
 
     @abstractmethod
     def draw(self) -> None:

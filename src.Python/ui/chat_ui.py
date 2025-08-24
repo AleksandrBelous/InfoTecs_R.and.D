@@ -214,7 +214,7 @@ class CursesChatUI:
     def run(self) -> None:
         """
         [RU]
-        Основной цикл UI.
+        Основной цикл UI с проверкой флага завершения.
 
         Аргументы:
             None: Функция не принимает аргументов.
@@ -223,7 +223,7 @@ class CursesChatUI:
             None: Функция не возвращает значение.
 
         [EN]
-        Main UI loop.
+        Main UI loop with termination flag check.
         
         Args:
             None: Function does not accept arguments.
@@ -247,6 +247,10 @@ class CursesChatUI:
             self.stdscr.timeout(200)
 
             while True:
+                # Проверяем флаг завершения от sender_thread
+                if not self.sender_thread.running:
+                    break
+
                 # Проверка изменения размера терминала
                 if self.window_manager.update_terminal_size():
                     self._create_windows()

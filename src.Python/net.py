@@ -12,110 +12,8 @@ import json
 import socket
 import threading
 from queue import Queue
-
-
-class UdpSender:
-    """
-    [RU]
-    Класс для отправки UDP сообщений на broadcast адрес и порт.
-
-    [EN]
-    Class for sending UDP messages to broadcast address and port.
-    """
-
-    def __init__(self, ip: str, port: int):
-        """
-        [RU]
-        Инициализация отправителя UDP сообщений.
-        
-        Аргументы:
-            ip (str): IP адрес интерфейса для привязки.
-            port (int): UDP порт для отправки.
-            
-        Возвращает:
-            None: Конструктор не возвращает значение.
-            
-        [EN]
-        Initialize UDP message sender.
-
-        Args:
-            ip (str): IP address of interface to bind.
-            port (int): UDP port for sending.
-
-        Returns:
-            None: Constructor does not return a value.
-        """
-        self.port: int = port
-        self.s_socket: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.s_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        self.s_socket.bind((ip, 0))  # привязка к исходному интерфейсу со случайным портом
-        self.broadcast_addr = ('255.255.255.255', port)
-
-    def send_datagram(self, nickname: str, message: str) -> None:
-        """
-        [RU]
-        Отправляет сообщение с nickname в JSON формате на broadcast адрес и порт.
-        
-        Аргументы:
-            nickname (str): Имя пользователя.
-            message (str): Текст сообщения для отправки.
-            
-        Возвращает:
-            None: Функция не возвращает значение.
-            
-        [EN]
-        Sends message with nickname in JSON format to broadcast address and port.
-
-        Args:
-            nickname (str): User nickname.
-            message (str): Text message to send.
-
-        Returns:
-            None: Function does not return a value.
-        """
-        try:
-            # Проверяем message на объем не более 1000 байт
-            message_bytes = message.encode('utf-8')
-            if len(message_bytes) > 1000:
-                raise ValueError(f"Сообщение слишком длинное: {len(message_bytes)} байт (максимум 1000)")
-
-            # Формируем JSON структуру
-            json_data = {
-                    "nickname": nickname,
-                    "message" : message
-                    }
-
-            # Сериализуем в JSON и отправляем
-            data = json.dumps(json_data, ensure_ascii=False).encode('utf-8')
-            self.s_socket.sendto(data, self.broadcast_addr)
-        except Exception as e:
-            raise RuntimeError(f"Ошибка отправки: {e}")
-
-    def close_socket(self):
-        """
-        [RU]
-        Закрывает сокет отправителя.
-        
-        Возвращает:
-            None: Функция не возвращает значение.
-
-        Аргументы:
-            None: Функция не принимает аргументов.
-            
-        Возвращает:
-            None: Функция не возвращает значение.
-            
-        [EN]
-        Closes the sender socket.
-
-        Args:
-            None: Function does not accept arguments.
-
-        Returns:
-            None: Function does not return a value.
-        """
-        if self.s_socket:
-            self.s_socket.close()
+from ui import CursesChatUI
+from curses import wrapper
 
 
 class UdpReceiverThread(threading.Thread):
@@ -127,13 +25,13 @@ class UdpReceiverThread(threading.Thread):
     Thread for receiving UDP messages.
     """
 
-    def __init__(self, queue: Queue, ip: str, port: int):
+    def __init__(self, rx_queue: Queue, ip: str, port: int):
         """
         [RU]
         Инициализация потока приемника UDP сообщений.
         
         Аргументы:
-            queue (Queue): Очередь для сообщений.
+            rx_queue (Queue): Очередь для сообщений.
             ip (str): IP адрес для идентификации подсети.
             port (int): UDP порт для прослушивания.
             
@@ -144,7 +42,7 @@ class UdpReceiverThread(threading.Thread):
         Initialize UDP message receiver thread.
 
         Args:
-            queue (Queue): Message queue.
+            rx_queue (Queue): Message queue.
             ip (str): IP address to identify subnet.
             port (int): UDP port for listening.
 
@@ -152,7 +50,7 @@ class UdpReceiverThread(threading.Thread):
             None: Constructor does not return a value.
         """
         super().__init__(daemon=True)
-        self.queue: Queue = queue
+        self.queue: Queue = rx_queue
         self.ip: str = ip
         self.port: int = port
         self.running: bool = True
@@ -293,10 +191,10 @@ class UdpSenderThread(threading.Thread):
         self.port: int = port
         self.running: bool = True
 
-        # Создаем сокет для отправки прямо здесь
+        # Создаем сокет для отправки
         self.s_socket: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.s_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-        self.s_socket.bind((ip, 0))  # привязка к исходному интерфейсу со случайным портом
+        self.s_socket.bind((ip, 0))  # привязка к указанному интерфейсу со случайным портом
         self.broadcast_addr = ('255.255.255.255', port)
 
     def send_datagram(self, nickname: str, message: str) -> None:
@@ -333,7 +231,7 @@ class UdpSenderThread(threading.Thread):
                     "message" : message
                     }
 
-            # Сериализуем в JSON и отправляем
+            # Упаковываем в JSON и отправляем
             data = json.dumps(json_data, ensure_ascii=False).encode('utf-8')
             self.s_socket.sendto(data, self.broadcast_addr)
         except Exception as e:
@@ -365,7 +263,6 @@ class UdpSenderThread(threading.Thread):
         Returns:
             None: Function does not return a value.
         """
-        from ui import CursesChatUI
         ui = CursesChatUI(stdscr, self, rx_queue, ip, port)  # self вместо sender
         ui.run()
 
@@ -390,7 +287,6 @@ class UdpSenderThread(threading.Thread):
             None: Function does not return a value.
         """
         try:
-            from curses import wrapper
             wrapper(self._ui_entry, self.rx_queue, self.ip, self.port)
         except Exception as e:
             print(f"Ошибка UI потока: {e}")
