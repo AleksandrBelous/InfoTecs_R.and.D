@@ -44,9 +44,9 @@ class WindowManager(BaseUI):
         super().__init__(stdscr)
 
         # Окна интерфейса
-        self.status_block: curses._CursesWindow = curses.newwin(0, 0)
-        self.messages_block: curses._CursesWindow = curses.newwin(0, 0)
-        self.input_block: curses._CursesWindow = curses.newwin(0, 0)
+        self.status_block: curses.window = curses.newwin(0, 0)
+        self.messages_block: curses.window = curses.newwin(0, 0)
+        self.input_block: curses.window = curses.newwin(0, 0)
 
         # Инициализация размеров
         self.max_y, self.max_x = self.get_terminal_size()
@@ -83,7 +83,7 @@ class WindowManager(BaseUI):
         """
         self._create_windows()
 
-    def get_status_window(self) -> curses._CursesWindow:
+    def get_status_window(self) -> curses.window:
         """
         [RU]
         Получение окна статуса.
@@ -99,7 +99,7 @@ class WindowManager(BaseUI):
         """
         return self.status_block
 
-    def get_messages_window(self) -> curses._CursesWindow:
+    def get_messages_window(self) -> curses.window:
         """
         [RU]
         Получение окна сообщений.
@@ -115,7 +115,7 @@ class WindowManager(BaseUI):
         """
         return self.messages_block
 
-    def get_input_window(self) -> curses._CursesWindow:
+    def get_input_window(self) -> curses.window:
         """
         [RU]
         Получение окна ввода.
