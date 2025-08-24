@@ -50,7 +50,7 @@ class UdpSender:
         self.s_socket.bind((ip, 0))  # привязка к исходному интерфейсу со случайным портом
         self.broadcast_addr = ('255.255.255.255', port)
 
-    def send(self, text: str) -> None:
+    def send_datagram(self, text: str) -> None:
         """
         [RU]
         Отправляет текстовое сообщение на broadcast адрес.
@@ -79,21 +79,30 @@ class UdpSender:
         except Exception as e:
             raise RuntimeError(f"Ошибка отправки: {e}")
 
-    def close(self):
+    def close_socket(self):
         """
         [RU]
         Закрывает сокет отправителя.
         
         Возвращает:
             None: Функция не возвращает значение.
+
+        Аргументы:
+            None: Функция не принимает аргументов.
+            
+        Возвращает:
+            None: Функция не возвращает значение.
             
         [EN]
         Closes the sender socket.
 
+        Args:
+            None: Function does not accept arguments.
+
         Returns:
             None: Function does not return a value.
         """
-        if hasattr(self, 'socket'):
+        if self.s_socket:
             self.s_socket.close()
 
 
@@ -113,8 +122,8 @@ class UdpReceiverThread(threading.Thread):
         
         Аргументы:
             queue (Queue): Очередь для сообщений.
-            ip (str): IP адрес для привязки.
-            port (int): UDP порт для приема.
+            ip (str): IP адрес для идентификации подсети.
+            port (int): UDP порт для прослушивания.
             
         Возвращает:
             None: Конструктор не возвращает значение.
@@ -124,8 +133,8 @@ class UdpReceiverThread(threading.Thread):
 
         Args:
             queue (Queue): Message queue.
-            ip (str): IP address to bind.
-            port (int): UDP port for receiving.
+            ip (str): IP address to identify subnet.
+            port (int): UDP port for listening.
 
         Returns:
             None: Constructor does not return a value.

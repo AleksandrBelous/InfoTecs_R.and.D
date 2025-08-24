@@ -9,39 +9,12 @@ Main UDP chat module.
 """
 
 import sys
-import signal
 from queue import Queue
 from curses import wrapper
 
 from args import parse_args
 from net import UdpSender, UdpReceiverThread
 from ui import CursesChatUI
-
-
-def signal_handler(signum, frame):
-    """
-    [RU]
-    Обработчик сигналов для корректного завершения.
-    
-    Аргументы:
-        signum (int): Сигнал завершения.
-        frame: Контекст выполнения.
-        
-    Возвращает:
-        None: Функция не возвращает значение.
-        
-    [EN]
-    Signal handler for graceful shutdown.
-    
-    Args:
-        signum (int): Signal number.
-        frame: Execution context.
-        
-    Returns:
-        None: Function does not return a value.
-    """
-    print("\nПолучен сигнал завершения. Выход...")
-    sys.exit(0)
 
 
 def ui_entry(stdscr, sender, rx_queue, ip, port):
@@ -96,10 +69,6 @@ def main():
     Returns:
         None: Function does not return a value.
     """
-    # Настройка обработчиков сигналов
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
-
     rx_thread, tx_sender = None, None
 
     try:
@@ -134,7 +103,7 @@ def main():
                 rx_thread.stop()
                 rx_thread.join(timeout=1)
             if 'tx_sender' in locals():
-                tx_sender.close()
+                tx_sender.close_socket()
         except:
             pass
         print("Чат завершен.")

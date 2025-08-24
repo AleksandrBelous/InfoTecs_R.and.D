@@ -72,14 +72,17 @@ class CursesChatUI:
         # Атрибуты для работы с экраном
         self.max_y: int = 0
         self.max_x: int = 0
+        # Статусный блок (верхняя строка)
         self.status_block: curses._CursesWindow = curses.newwin(0, 0)
+        # Блок сообщений (основная область)
         self.messages_block: curses._CursesWindow = curses.newwin(0, 0)
+        # Блок ввода (нижняя строка)
         self.input_block: curses._CursesWindow = curses.newwin(0, 0)
 
     def _create_windows(self):
         """
         [RU]
-        Создает окна для разных панелей.
+        Создает окна для разных блоков.
 
         Аргументы:
             None: Функция не принимает аргументов.
@@ -88,7 +91,7 @@ class CursesChatUI:
             None: Функция не возвращает значение.
             
         [EN]
-        Creates windows for different panels.
+        Creates windows for different blocks.
 
         Args:
             None: Function does not accept arguments.
@@ -98,14 +101,14 @@ class CursesChatUI:
         """
         self.max_y, self.max_x = self.stdscr.getmaxyx()
 
-        # Статусная панель (верхняя строка)
+        # Статусный блок (верхняя строка)
         self.status_block = curses.newwin(1, self.max_x, 0, 0)
 
-        # Панель сообщений (основная область)
+        # Блок сообщений (основная область)
         self.messages_block = curses.newwin(self.max_y - 2, self.max_x, 1, 0)
         self.messages_block.scrollok(True)
 
-        # Панель ввода (нижняя строка)
+        # Блок ввода (нижняя строка)
         self.input_block = curses.newwin(1, self.max_x, self.max_y - 1, 0)
 
         # Включить keypad режим для лучшей обработки клавиш
@@ -115,7 +118,7 @@ class CursesChatUI:
     def _draw_status(self):
         """
         [RU]
-        Отрисовывает статусную панель.
+        Отрисовывает статусный блок.
 
         Аргументы:
             None: Функция не принимает аргументов.
@@ -124,7 +127,7 @@ class CursesChatUI:
             None: Функция не возвращает значение.
             
         [EN]
-        Draws the status panel.
+        Draws the status block.
 
         Args:
             None: Function does not accept arguments.
@@ -137,10 +140,53 @@ class CursesChatUI:
         self.status_block.addstr(0, 0, status_line[:self.max_x - 1])
         self.status_block.refresh()
 
+    def _wrap_message(self, msg: str, max_width: int) -> List[str]:
+        """
+        [RU]
+        Перенос сообщений на несколько строк.
+
+        Аргументы:
+            msg (str): Сообщение для переноса.
+            max_width (int): Максимальная ширина строки.
+
+        Возвращает:
+            List[str]: Список строк после переноса.
+
+        [EN]
+        Message wrapping to multiple lines.
+
+        Args:
+            msg (str): Message to wrap.
+            max_width (int): Maximum line width.
+
+        Returns:
+            List[str]: List of wrapped lines.
+        """
+        if len(msg) <= max_width:
+            return [msg]
+
+        lines = []
+        words = msg.split()
+        current_line = ""
+
+        for word in words:
+            test_line = current_line + (" " + word) if current_line else word
+            if len(test_line) <= max_width:
+                current_line = test_line
+            else:
+                if current_line:
+                    lines.append(current_line)
+                current_line = word
+
+        if current_line:
+            lines.append(current_line)
+
+        return lines
+
     def _draw_messages(self):
         """
         [RU]
-        Отрисовывает панель сообщений.
+        Отрисовывает блок сообщений с переносом строк.
 
         Аргументы:
             None: Функция не принимает аргументов.
@@ -149,7 +195,7 @@ class CursesChatUI:
             None: Функция не возвращает значение.
             
         [EN]
-        Draws the messages panel.
+        Draws the messages block with line wrapping.
 
         Args:
             None: Function does not accept arguments.
@@ -163,19 +209,25 @@ class CursesChatUI:
         max_lines = self.max_y - 3
         start_idx = max(0, len(self.messages) - max_lines)
 
-        for i, msg in enumerate(self.messages[start_idx:]):
-            if i >= max_lines:
+        current_line = 0
+        for msg in self.messages[start_idx:]:
+            if current_line >= max_lines:
                 break
-            # Обрезаем сообщение если оно слишком длинное
-            display_msg = msg[:self.max_x - 1]
-            self.messages_block.addstr(i, 0, display_msg)
+
+            # Перенос длинных сообщений
+            wrapped_lines = self._wrap_message(msg, self.max_x - 1)
+            for line in wrapped_lines:
+                if current_line >= max_lines:
+                    break
+                self.messages_block.addstr(current_line, 0, line)
+                current_line += 1
 
         self.messages_block.refresh()
 
     def _draw_input(self):
         """
         [RU]
-        Отрисовывает панель ввода.
+        Отрисовывает блок ввода.
         
         Аргументы:
             None: Функция не принимает аргументов.
@@ -184,7 +236,7 @@ class CursesChatUI:
             None: Функция не возвращает значение.
             
         [EN]
-        Draws the input panel.
+        Draws the input block.
 
         Args:
             None: Function does not accept arguments.
@@ -242,7 +294,7 @@ class CursesChatUI:
                 if self.input_buffer.strip():
                     try:
                         message = f"{self.nickname}: {self.input_buffer.strip()}"
-                        self.sender.send(message)
+                        self.sender.send_datagram(message)
                         self.input_buffer = ""
                         self.status = "OK"
                     except Exception as e:
@@ -332,6 +384,6 @@ class CursesChatUI:
             pass
         finally:
             # Восстанавливаем терминал
+            curses.curs_set(1)
             curses.nocbreak()
             curses.echo()
-            curses.curs_set(1)

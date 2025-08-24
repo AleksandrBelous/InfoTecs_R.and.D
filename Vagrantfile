@@ -68,7 +68,7 @@ Vagrant.configure("2") do |config|
           ansible.playbook = "ansible/playbooks/vm-specific/centos-setup.yaml"
           ansible.inventory_path = "ansible/inventory.ini"
           ansible.config_file = "ansible/ansible.cfg"
-          ansible.limit = "redhat"
+          ansible.limit = "centos"
           ansible.become = true
         end
       end

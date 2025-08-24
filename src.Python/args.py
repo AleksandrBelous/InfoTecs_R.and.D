@@ -18,7 +18,7 @@ from argparse import Namespace
 def is_ip_valid(ip: str) -> tuple[bool, str]:
     """
     [RU]
-    Проверяет IP адрес и возвращает детальное сообщение об ошибке.
+    Проверяет валидность IP адреса и возвращает сообщение об ошибке.
     
     Аргументы:
         ip (str): IP адрес для проверки.
@@ -27,7 +27,7 @@ def is_ip_valid(ip: str) -> tuple[bool, str]:
         tuple[bool, str]: (валидность, сообщение об ошибке).
         
     [EN]
-    Validates IP address and returns detailed error message.
+    Validates IP address and returns error message.
     
     Args:
         ip (str): IP address to validate.
@@ -55,7 +55,7 @@ def is_ip_valid(ip: str) -> tuple[bool, str]:
         else:
             return False, f"IP адрес '{ip}' не найден на текущей машине."
     except (subprocess.TimeoutExpired, FileNotFoundError):
-        # Fallback: если команда ip недоступна, переходим к проверке сокета
+        # Если команда ip недоступна, переходим к проверке сокета
         pass
 
     # Проверка 3: Возможность привязки к сокету
@@ -94,8 +94,7 @@ def parse_args() -> Namespace:
             formatter_class=argparse.RawDescriptionHelpFormatter,
             epilog="""
 Примеры использования / Usage examples:
-  python3 main.py --ip 192.168.1.100 --port 12345
-  python3 main.py --ip 10.0.0.5 --port 12345
+  python3 main.py --ip 192.168.56.10 --port 12345
         """
             )
 
@@ -103,7 +102,7 @@ def parse_args() -> Namespace:
             '--ip',
             type=str,
             required=True,
-            help='IPv4 адрес интерфейса для приема сообщений'
+            help='IPv4 адрес интерфейса для идентификации подсети'
             )
 
     parser.add_argument(
@@ -115,7 +114,7 @@ def parse_args() -> Namespace:
 
     args = parser.parse_args()
 
-    # Валидация IP адреса с детальным сообщением об ошибке
+    # Валидация IP адреса с сообщением об ошибке
     is_valid_ip, error_message = is_ip_valid(args.ip)
     if not is_valid_ip:
         parser.error(error_message)
